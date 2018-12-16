@@ -1,4 +1,4 @@
 # spotify_nearby
 
-Show nearby Spotify spotify listeners
+Show nearby Spotify listeners
 
