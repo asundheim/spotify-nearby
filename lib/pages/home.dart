@@ -13,6 +13,7 @@ class HomeState extends State<Home> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Spotify Nearby"),
+        // Anything that should be on appbar should be added to actions List
         actions: <Widget>[
           new IconButton(
               icon: Icon(Icons.settings),
