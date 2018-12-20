@@ -20,17 +20,47 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(new MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  MyAppState createState() => new MyAppState();
+}
+
+// Needs to be stateful to correctly change theme
+class MyAppState extends State<MyApp> {
+
+  // Variables used to manage a dark theme
+  Brightness brightness;
+  bool _isDark = false;
 
   @override
   Widget build(BuildContext context) {
+
+    //loads theme data, then coverts it to brightness variable
+    _loadTheme();
+    if (_isDark) {
+      brightness = Brightness.dark;
+    } else {
+      brightness = Brightness.light;
+    }
+
+    // Main Material app return calling home class
+    // Main theme for the entire application, Do not override primary color
+    // of children otherwise primary app color picker won't function on it
     return new MaterialApp(
       title: 'Flutter WebView Demo',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
+        brightness: brightness, //Controls dark theme
       ),
       home: new Home(),
     );
+  }
+
+  // Accesses theme data stored in shared preferences "darkMode"
+  _loadTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDark = prefs.getBool("darkMode") ?? false;
+    });
   }
 }
 
