@@ -38,7 +38,7 @@ class SettingsState extends State<Settings> {
   }
 
   // Generic Widget for creating a simple switch setting, provide onChange
-  // with a function call
+  //  // with a function call
   Widget _newSettingSwitch(String title, String subtitle, bool value, onChange) {
     return new ListTile(
       title: new Text(title),

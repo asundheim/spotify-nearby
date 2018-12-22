@@ -36,11 +36,7 @@ class MyAppState extends State<MyApp> {
 
     //loads theme data, then coverts it to brightness variable
     _loadTheme();
-    if (_isDark) {
-      brightness = Brightness.dark;
-    } else {
-      brightness = Brightness.light;
-    }
+    brightness = _isDark ? Brightness.dark : Brightness.light;
 
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
