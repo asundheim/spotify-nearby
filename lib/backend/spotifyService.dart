@@ -6,9 +6,10 @@ import 'package:http/http.dart' as http;
 String client_id = 'a08c7a5c79304ac1bb28fed5b687f0c1';
 String client_secret = '2d710351a8ef47c18e29c875da325b7f';
 
+http.Client client = http.Client();
+
 Future<http.Response> initialAuth(String code) {
-  print('posting code: ' + code);
-  return http.post('https://accounts.spotify.com/api/token', headers:  clientHeaders(), body: preAuthBody(code)).then((response){
+  return client.post('https://accounts.spotify.com/api/token', headers:  clientHeaders(), body: preAuthBody(code)).then((response){
     Map map = json.decode(response.body);
     updateAuthToken(map['access_token']);
     updateRefreshToken(map['refresh_token']);
@@ -16,8 +17,8 @@ Future<http.Response> initialAuth(String code) {
   });
 }
 
-Future<http.Response> refreshAuth() async {
-  return http.post('https://accounts.spotify.com/api/token', headers: clientHeaders(), body: refreshBody(await refreshToken())).then((result) {
+Future<http.Response> refreshAuth(String refreshToken) {
+  return client.post('https://accounts.spotify.com/api/token', headers: clientHeaders(), body: refreshBody(refreshToken)).then((result) {
     Map map = json.decode(result.body);
     updateAuthToken(map['access_token']);
     updateExpireTime(map['expires_in'].toString());
@@ -27,12 +28,16 @@ Future<http.Response> refreshAuth() async {
   });
 }
 
-void updateAuthToken(String authToken) async{
+Future<http.Response> getNowPlaying(String authToken) async {
+  return client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken));
+}
+
+void updateAuthToken(String authToken) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString('auth_token', authToken);
 }
 
-void updateExpireTime(String duration) async{
+void updateExpireTime(String duration) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setInt('expire_time', int.parse(duration));
   prefs.setInt('set_time', DateTime.now().millisecondsSinceEpoch);
@@ -48,7 +53,7 @@ Future<bool> tokenExists() async {
   return prefs.getKeys().contains('refresh_token');
 }
 
-Future<String> refreshToken() async {
+Future<String> getRefreshToken() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString('refresh_token');
 }
@@ -59,19 +64,15 @@ Future<String> getAuthToken() async {
   return token;
 }
 
-Future<void> clearToken() async {
+Future<void> clearTokens() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.clear();
 }
 
-Future<bool> authTokenExpired() async{
+Future<bool> authTokenExpired() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   int expired = prefs.getInt('set_time') + (1000 * prefs.getInt('expire_time')) - DateTime.now().millisecondsSinceEpoch;
   return expired < 0;
-}
-
-Future<http.Response> getNowPlaying() async {
-  return http.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(await getAuthToken()));
 }
 
 Map<String, String> clientHeaders() {
