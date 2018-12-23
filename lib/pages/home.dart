@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'settings.dart';
-import 'package:spotify_nearby/backend/MyHomepage.dart';
+import 'package:spotify_nearby/backend/apiTesting.dart';
 
 class Home extends StatefulWidget {
   HomeState createState() => new HomeState();
@@ -24,7 +24,9 @@ class HomeState extends State<Home> {
         child: Center(
           child:
           new RaisedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())))
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
+              child: new Text('API Stuff'),
+          ),
         ),
       ),
     );
