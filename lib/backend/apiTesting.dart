@@ -81,10 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (await spotifyService.tokenExists()) {
       // If token has expired, update it
       if (await spotifyService.authTokenExpired()) {
-        spotifyService.refreshAuth().then((result) => handleLogin());
+        spotifyService.refreshAuth(await spotifyService.getRefreshToken()).then((result) => handleLogin());
       } else {
         // Test Spotify calls here
-        spotifyService.getNowPlaying().then((response){
+        spotifyService.getNowPlaying(await spotifyService.getAuthToken()).then((response){
           _setNowPlaying(json.decode(response.body)['item']['name']);
         });
       }
