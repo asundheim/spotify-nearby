@@ -11,21 +11,43 @@ class _AuthState extends State<Auth> {
     return new Material(
       color: Colors.green,
       child: InkWell(
+        onTap: () {
+          // Todo add auth page link
+          setState(() {
+          });
+        },
         splashColor: Colors.greenAccent,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.only(top: 30),
+            padding: const EdgeInsets.only(top: 100),
             child: Column(
               children: <Widget>[
-                new Text(
-                  "Please authorize Spotify",
+                Text(
+                  "Please Authorize Spotify",
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                new Center(
-                  child: new Image(image: null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                      "Click anywhere",
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: new Center(
+                      child: new Image(
+                          image:
+                          AssetImage('assets/res/spotify.png'),
+                        width: 112.0,
+                        height: 112.0,
+                        color: Colors.green[300],
+                      )
+                  ),
                 )
               ],
             ),
