@@ -15,7 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
  * TODO: Transmit Spotify data
  * TODO: Add UI for list of nearby users
  * TODO: Add UI page for account
- * TODO: Settings page
+ * TODO: Implement Nearby Sharing toggle in settings
+ * TODO: Implement Logout in settings
  */
 
 
@@ -30,6 +31,8 @@ class MyAppState extends State<MyApp> {
 
   // Variables used to manage a dark theme
   Brightness brightness;
+  //String _color = "Colors.blue";
+  //MaterialColor _color2 = _color;
   bool _isDark = false;
   String _token;
 
@@ -37,8 +40,10 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 
     //loads theme data, then coverts it to brightness variable
+    _loadColor();
     _loadTheme();
     brightness = _isDark ? Brightness.dark : Brightness.light;
+
 
 
     // Main Material app return calling home class
@@ -63,6 +68,13 @@ class MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _isDark = prefs.getBool("darkMode") ?? false;
+    });
+  }
+
+  _loadColor() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      //_color = prefs.getString("themeColor") ?? "Colors.blue";
     });
   }
 

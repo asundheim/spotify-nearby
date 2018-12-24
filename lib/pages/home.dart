@@ -31,11 +31,20 @@ class HomeState extends State<Home> {
       body: new Material(
         child: Center(
           child: Column(
-            // TODO add gesture controller to reload, if not constantly
+            // TODO add gesture controller to refresh
             children: <Widget>[
               new LinearProgressIndicator(
                 // TODO change value to 1 when done loading
                 value: null,
+              ),
+              InkWell(
+                // TODO ontap launches your spotify
+                onTap: () => setState(() {
+                  }),
+              child: new ListTile(
+                title: Text("My Username", textAlign: TextAlign.center),
+                subtitle: Text("My Currently playing Song", textAlign: TextAlign.center),
+                ),
               ),
               Expanded(
               child: new ListView.builder(
