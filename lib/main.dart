@@ -31,6 +31,7 @@ class MyAppState extends State<MyApp> {
   // Variables used to manage a dark theme
   Brightness brightness;
   bool _isDark = false;
+  String _token;
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +40,21 @@ class MyAppState extends State<MyApp> {
     _loadTheme();
     brightness = _isDark ? Brightness.dark : Brightness.light;
 
+
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
     // of children otherwise primary app color picker won't function on it
     return new MaterialApp(
-      title: 'Flutter WebView Demo',
+      title: 'Spotify Nearby',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
         brightness: brightness, //Controls dark theme
       ),
-      home: new Home(),
+     initialRoute: '/',
+      routes: {
+        '/': (context) => Home(),
+        '/auth': (context) => Auth(),
+      }
     );
   }
 
@@ -59,5 +65,6 @@ class MyAppState extends State<MyApp> {
       _isDark = prefs.getBool("darkMode") ?? false;
     });
   }
+
 }
 

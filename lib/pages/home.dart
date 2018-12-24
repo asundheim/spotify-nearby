@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'settings.dart';
 import 'package:spotify_nearby/backend/apiTesting.dart';
@@ -8,8 +9,15 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+
+  String _token;
+
   @override
   Widget build(BuildContext context) {
+
+    // Launch auth page, currently broken don't uncomment
+    //_loadAuth();
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Spotify Nearby"),
@@ -30,5 +38,11 @@ class HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  _loadAuth() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('auth_token') ?? null;
+    if (_token == null) Navigator.pushNamed(context, '/auth');
   }
 }
