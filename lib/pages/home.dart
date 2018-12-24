@@ -30,11 +30,41 @@ class HomeState extends State<Home> {
       ),
       body: new Material(
         child: Center(
-          child:
-          new RaisedButton(
+          child: Column(
+            // TODO add gesture controller to reload, if not constantly
+            children: <Widget>[
+              new LinearProgressIndicator(
+                // TODO change value to 1 when done loading
+                value: null,
+              ),
+              Expanded(
+              child: new ListView.builder(
+                // Max 50 items for now, increase for each nearby
+                  itemCount: 50,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(16.0),
+                  itemBuilder: (BuildContext context, int index) {
+                    Padding(padding: EdgeInsets.all(16.0));
+                    return new InkWell(
+                      onTap: () => setState(() {
+                      }),
+                      child: ListTile(
+                        title: Text("PlaceHolder Title"),
+                        subtitle: Text("PlaceHolder Subtitle"),
+                        trailing: new Icon(Icons.music_note),
+                        // TODO add an onTap event to listen to that music
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
+                    )
+                    );
+                  }
+              ),
+              )
+            ],
+          )
+          /*new RaisedButton(
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
               child: new Text('API Stuff'),
-          ),
+          ),*/
         ),
       ),
     );
