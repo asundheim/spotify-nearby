@@ -4,8 +4,8 @@ import 'pages/home.dart';
 import 'pages/auth.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spotify_nearby/backend/themeService.dart' as themeService;
 /*
  * TODO: Local Storage for Auth keys
  * TODO: Build basic UI controls
@@ -29,7 +29,6 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
 
   // Variables used to manage a dark theme
-  Brightness brightness;
   bool _isDark = false;
   String _token;
 
@@ -38,8 +37,6 @@ class MyAppState extends State<MyApp> {
 
     //loads theme data, then coverts it to brightness variable
     _loadTheme();
-    brightness = _isDark ? Brightness.dark : Brightness.light;
-
 
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
@@ -48,7 +45,7 @@ class MyAppState extends State<MyApp> {
       title: 'Spotify Nearby',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
-        brightness: brightness, //Controls dark theme
+        brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
       ),
      initialRoute: '/',
       routes: {
@@ -60,9 +57,9 @@ class MyAppState extends State<MyApp> {
 
   // Accesses theme data stored in shared preferences "darkMode"
   _loadTheme() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool dark = await themeService.darkThemeEnabled();
     setState(() {
-      _isDark = prefs.getBool("darkMode") ?? false;
+      _isDark = dark;
     });
   }
 

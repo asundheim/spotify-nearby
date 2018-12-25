@@ -7,18 +7,17 @@ import 'package:http/testing.dart';
 import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
 
 void main() {
-  //
+  const MethodChannel('plugins.flutter.io/shared_preferences')
+      .setMockMethodCallHandler((MethodCall methodCall) async {
+    if (methodCall.method == 'getAll') {
+      return <String, dynamic>{};
+    }
+    return null;
+  });
+
+  setUp(() async => await spotifyService.clearTokens());
 
   test('initial auth storage', () async {
-    // Set up Shared Prefs
-    const MethodChannel('plugins.flutter.io/shared_preferences')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return <String, dynamic>{};
-      }
-      return null;
-    });
-
     // Mock http calls
     spotifyService.client = MockClient((request) async {
       final mapJson = {
@@ -36,20 +35,9 @@ void main() {
 
     expect(await spotifyService.getAuthToken(), 'testAccessToken');
     expect(await spotifyService.getRefreshToken(), 'testRefreshToken');
-
-    spotifyService.clearTokens();
   });
 
   test('refresh auth storage', () async {
-    // Set up Shared Prefs
-    const MethodChannel('plugins.flutter.io/shared_preferences')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return <String, dynamic>{};
-      }
-      return null;
-    });
-
     // Mock http calls
     spotifyService.client = MockClient((request) async {
       final mapJson = {
@@ -83,15 +71,6 @@ void main() {
   });
 
   test('detect expired token', () async {
-    // Set up Shared Prefs
-    const MethodChannel('plugins.flutter.io/shared_preferences')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return <String, dynamic>{};
-      }
-      return null;
-    });
-
     // Mock http calls
     spotifyService.client = MockClient((request) async {
       final mapJson = {

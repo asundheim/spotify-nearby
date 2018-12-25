@@ -66,7 +66,10 @@ Future<String> getAuthToken() async {
 
 Future<void> clearTokens() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.clear();
+  prefs.remove('auth_token');
+  prefs.remove('refresh_token');
+  prefs.remove('set_time');
+  prefs.remove('expire_time');
 }
 
 Future<bool> authTokenExpired() async {
