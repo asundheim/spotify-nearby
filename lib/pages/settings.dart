@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spotify_nearby/backend/apiTesting.dart';
 import 'package:spotify_nearby/backend/themeService.dart' as themeService;
+import 'package:spotify_nearby/backend/settingsService.dart' as settingsService;
 
 class Settings extends StatefulWidget {
   SettingsState createState() => new SettingsState();
@@ -160,34 +161,31 @@ class SettingsState extends State<Settings> {
     });
   }
 
-  // TODO: put this all in themeService and write unit tests
   _loadSharing() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool sharing = await settingsService.isSharing();
     setState(() {
-      _isSharing = (prefs.getBool("sharing") ?? true);
+      _isSharing = sharing;
     });
   }
 
   _setSharing(bool value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await settingsService.setSharing(value);
     setState(() {
-      prefs.setBool("sharing", value);
-      _isSharing = prefs.get("sharing");
+      _isSharing = value;
     });
   }
 
   _loadThemeColor() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String color = await themeService.getColor();
     setState(() {
-      _themeColorString = (prefs.getString("themeColor") ?? "blue");
+      _themeColorString = color;
     });
   }
 
   _setThemeColor(String value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await themeService.setColor(value);
     setState(() {
-      prefs.setString("themeColor", value);
-      _themeColorString = prefs.getString("ThemeColor");
+      _themeColorString = value;
     });
   }
 }

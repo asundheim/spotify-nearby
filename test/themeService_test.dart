@@ -16,7 +16,7 @@ void main() {
 
   setUp(() async => themeService.clearPrefs());
 
-  test('toggling should update prefs', () async {
+  test('toggling dark mode should update prefs', () async {
     await themeService.toggleDarkTheme(true);
 
     expect(await themeService.darkThemeEnabled(), true);
