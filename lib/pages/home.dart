@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'settings.dart';
 import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
@@ -19,7 +20,6 @@ class HomeState extends State<Home> {
     // Launch auth page, currently broken don't uncomment
     //_loadAuth();
 
-
     return Scaffold(
       appBar: new AppBar(
         title: new Text("Spotify Nearby"),
@@ -32,6 +32,10 @@ class HomeState extends State<Home> {
       ),
       body: new Material(
         child: Center(
+          child: GestureDetector(
+            onHorizontalDragDown: (e) => (e) => SnackBar(
+              content: Text("update"),
+            ),
           child: Column(
             // TODO add gesture controller to refresh
             children: <Widget>[
@@ -42,6 +46,7 @@ class HomeState extends State<Home> {
               InkWell(
                 // TODO ontap launches your spotify
                 onTap: () => setState(() {
+                  _launchSpotify();
                   }),
               child: new ListTile(
                 title: Text("My Username", textAlign: TextAlign.center),
@@ -70,17 +75,22 @@ class HomeState extends State<Home> {
                   }
               ),
               )
-            /*new RaisedButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
-            child: new Text('API Stuff'),
-        ),*/
           ]
+          ),
           ),
         ),
       ),
     );
   }
 
+  _launchSpotify() async {
+    const url = "https://open.spotify.com/track";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
   _loadAuth() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!(await spotifyService.tokenExists())) Navigator.pushNamed(context, '/auth');

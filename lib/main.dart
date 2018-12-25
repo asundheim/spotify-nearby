@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'pages/home.dart';
 import 'pages/auth.dart';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spotify_nearby/backend/themeService.dart' as themeService;
 /*
  * TODO: Local Storage for Auth keys
@@ -29,19 +26,19 @@ class MyApp extends StatefulWidget {
 // Needs to be stateful to correctly change theme
 class MyAppState extends State<MyApp> {
 
-  // Variables used to manage a dark theme
+  // Variables used to manage app theme
   String _color = "blue";
-  MaterialColor _colorMat = Colors.blue;
   bool _isDark = false;
-  String _token;
+  //String _token;
 
   @override
   Widget build(BuildContext context) {
 
-    //loads theme data, then coverts it to brightness variable
+    // loads theme data and color data
     _loadColor();
     _loadDarkMode();
 
+    // Map for setting app color
     Map<String, MaterialColor> colorMap = new Map();
     colorMap['blue'] = Colors.blue;
     colorMap['red'] = Colors.red;
@@ -51,15 +48,13 @@ class MyAppState extends State<MyApp> {
     colorMap['purple'] = Colors.purple;
     colorMap['cyan'] = Colors.cyan;
 
-    _colorMat = colorMap[_color];
-
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
     // of children otherwise primary app color picker won't function on it
     return new MaterialApp(
       title: 'Spotify Nearby',
       theme: new ThemeData(
-        primarySwatch: _colorMat,
+        primarySwatch: colorMap[_color],
         brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
       ),
      initialRoute: '/',
@@ -84,6 +79,5 @@ class MyAppState extends State<MyApp> {
       _color = currentColor;
     });
   }
-
 }
 

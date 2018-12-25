@@ -87,7 +87,7 @@ Map<String, String> clientHeaders() {
 Map<String, String> authHeaders(String authCode) {
   Map<String, String> map = new Map<String, String>();
   map['Content-Type'] = 'application/json';
-  map['Authorization'] = 'Bearer ${authCode}';
+  map['Authorization'] = 'Bearer $authCode';
   return map;
 }
 
