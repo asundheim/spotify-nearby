@@ -30,8 +30,8 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
 
   // Variables used to manage a dark theme
-  //String _color = "Colors.blue";
-  //MaterialColor _color2 = _color;
+  String _color = "blue";
+  MaterialColor _colorMat = Colors.blue;
   bool _isDark = false;
   String _token;
 
@@ -42,6 +42,29 @@ class MyAppState extends State<MyApp> {
     _loadColor();
     _loadTheme();
 
+    switch (_color) {
+      case "blue":
+        _colorMat = Colors.blue;
+        break;
+      case "red":
+        _colorMat = Colors.red;
+        break;
+      case "green":
+        _colorMat = Colors.green;
+        break;
+      case "yellow":
+        _colorMat = Colors.yellow;
+        break;
+      case "pink":
+        _colorMat = Colors.pink;
+        break;
+      case "purple":
+        _colorMat = Colors.purple;
+        break;
+      case "cyan":
+        _colorMat = Colors.cyan;
+        break;
+    }
 
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
@@ -49,7 +72,7 @@ class MyAppState extends State<MyApp> {
     return new MaterialApp(
       title: 'Spotify Nearby',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: _colorMat,
         brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
       ),
      initialRoute: '/',
@@ -71,7 +94,7 @@ class MyAppState extends State<MyApp> {
   _loadColor() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      //_color = prefs.getString("themeColor") ?? "Colors.blue";
+      _color = prefs.getString("themeColor") ?? "blue";
     });
   }
 

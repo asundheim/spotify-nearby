@@ -103,7 +103,7 @@ class SettingsState extends State<Settings> {
       trailing:
         // TODO Make color current color
         PopupMenuButton<String>(
-          icon: Icon(Icons.color_lens, color: null,),
+          icon: Icon(Icons.color_lens, color: null),
           onSelected: (String result) {
             setState(() {
               _setThemeColor(result);
@@ -111,16 +111,32 @@ class SettingsState extends State<Settings> {
         },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
-                value: "Colors.blue",
+                value: "blue",
                   child: Text("Blue")
               ),
               const PopupMenuItem<String>(
-                  value: "Colors.green",
+                  value: "green",
                   child: Text("Green")
               ),
               const PopupMenuItem<String>(
-                  value: "Colors.red",
+                  value: "red",
                   child: Text("Red")
+              ),
+              const PopupMenuItem<String>(
+                  value: "yellow",
+                  child: Text("Yellow")
+              ),
+              const PopupMenuItem<String>(
+                  value: "pink",
+                  child: Text("Pink")
+              ),
+              const PopupMenuItem<String>(
+                  value: "purple",
+                  child: Text("Purple")
+              ),
+              const PopupMenuItem<String>(
+                  value: "cyan",
+                  child: Text("Cyan")
               ),
   ],
         ),
