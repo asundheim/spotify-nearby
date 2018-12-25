@@ -42,29 +42,16 @@ class MyAppState extends State<MyApp> {
     _loadColor();
     _loadTheme();
 
-    switch (_color) {
-      case "blue":
-        _colorMat = Colors.blue;
-        break;
-      case "red":
-        _colorMat = Colors.red;
-        break;
-      case "green":
-        _colorMat = Colors.green;
-        break;
-      case "yellow":
-        _colorMat = Colors.yellow;
-        break;
-      case "pink":
-        _colorMat = Colors.pink;
-        break;
-      case "purple":
-        _colorMat = Colors.purple;
-        break;
-      case "cyan":
-        _colorMat = Colors.cyan;
-        break;
-    }
+    Map<String, MaterialColor> colorMap = new Map();
+    colorMap['blue'] = Colors.blue;
+    colorMap['red'] = Colors.red;
+    colorMap['green'] = Colors.green;
+    colorMap['yellow'] = Colors.yellow;
+    colorMap['pink'] = Colors.pink;
+    colorMap['purple'] = Colors.purple;
+    colorMap['cyan'] = Colors.cyan;
+
+    _colorMat = colorMap[_color];
 
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
