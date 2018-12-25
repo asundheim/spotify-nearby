@@ -40,7 +40,7 @@ class MyAppState extends State<MyApp> {
 
     //loads theme data, then coverts it to brightness variable
     _loadColor();
-    _loadTheme();
+    _loadDarkMode();
 
     Map<String, MaterialColor> colorMap = new Map();
     colorMap['blue'] = Colors.blue;
@@ -71,7 +71,7 @@ class MyAppState extends State<MyApp> {
   }
 
   // Accesses theme data stored in shared preferences "darkMode"
-  _loadTheme() async {
+  _loadDarkMode() async {
     bool dark = await themeService.darkThemeEnabled();
     setState(() {
       _isDark = dark;
@@ -79,9 +79,9 @@ class MyAppState extends State<MyApp> {
   }
 
   _loadColor() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currentColor = await themeService.getColor();
     setState(() {
-      _color = prefs.getString("themeColor") ?? "blue";
+      _color = currentColor;
     });
   }
 
