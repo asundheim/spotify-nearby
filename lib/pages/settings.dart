@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spotify_nearby/backend/apiTesting.dart';
+import 'package:spotify_nearby/backend/themeService.dart' as themeService;
 
 class Settings extends StatefulWidget {
   SettingsState createState() => new SettingsState();
@@ -25,7 +27,7 @@ class SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: new AppBar(
         title: new Text("Settings"),
       ),
@@ -34,19 +36,35 @@ class SettingsState extends State<Settings> {
           shrinkWrap: true,
           padding: const EdgeInsets.all(16.0),
           children: <Widget>[
-            _newSettingSwitch("Dark Theme", "Changes in app theme to dark", _isDark, _setDarkTheme),
             _themeColor(),
-            _newSettingSwitch("Currently Sharing", "Toggles nearby sharing", _isSharing, _setSharing),
+            _newSettingSwitch(
+              title: "Currently Sharing", 
+              subtitle: "Toggles nearby sharing", 
+              value: _isSharing, 
+              onChange: _setSharing,
+              key: new Key('currentlySharing')
+            ),
             _accountSetting(),
+            _newSettingSwitch(
+                title: 'Dark Theme',
+                subtitle: 'Changes in app theme to dark',
+                value: _isDark,
+                onChange: _toggleDarkTheme,
+                key: new Key('toggleDarkTheme')
+            ),
+            _textButton(
+                text: 'Spotify API stuff',
+                subtitle: 'shhhhh',
+                key: new Key('API')
+            ),
           ],
         ),
       ),
     );
   }
 
-  // Generic Widget for creating a simple switch setting, provide onChange
-  // with a function call
-  Widget _newSettingSwitch(String title, String subtitle, bool value, onChange) {
+  // Generic Widget for creating a simple switch setting, provide onChange with a function call
+  Widget _newSettingSwitch({String title, String subtitle, bool value, onChange, Key key}) {
     return new ListTile(
       title: new Text(title),
       subtitle: new Text(subtitle),
@@ -54,6 +72,16 @@ class SettingsState extends State<Settings> {
           value: value,
           onChanged: onChange,
       ),
+      key: key,
+    );
+  }
+
+  Widget _textButton({String text, String subtitle, Key key}) {
+    return new ListTile(
+      title: new Text(text),
+      subtitle: new Text(subtitle),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
+      key: key,
     );
   }
 
@@ -100,20 +128,19 @@ class SettingsState extends State<Settings> {
   }
 
   // Loads the initial dark theme bool from SharedPreferences, if non are found
-  // loads as false (?? operator).
+  // loads as falses
   _loadDarkTheme() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool dark = await themeService.darkThemeEnabled();
     setState(() {
-      _isDark = (prefs.getBool("darkMode") ?? false);
+      _isDark = dark;
     });
   }
 
   // Saves the dark theme bool value to SharedPreferences
-  _setDarkTheme(bool value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  _toggleDarkTheme(bool value) async {
     setState(() {
-      prefs.setBool("darkMode", value);
-      _isDark = prefs.get("darkMode");
+      themeService.toggleDarkTheme(value);
+      _isDark = value;
     });
   }
 
