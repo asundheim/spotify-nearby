@@ -127,8 +127,8 @@ class SettingsState extends State<Settings> {
       );
   }
 
-  // Loads the initial dark theme bool from SharedPreferences, if non are found
-  // loads as falses
+  // Loads the initial dark theme bool from SharedPreferences, if none are found
+  // loads as false
   _loadDarkTheme() async {
     bool dark = await themeService.darkThemeEnabled();
     setState(() {
@@ -144,6 +144,7 @@ class SettingsState extends State<Settings> {
     });
   }
 
+  // TODO: put this all in themeService and write unit tests
   _loadSharing() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {

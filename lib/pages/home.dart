@@ -64,7 +64,7 @@ class HomeState extends State<Home> {
                         subtitle: Text("PlaceHolder Subtitle"),
                         trailing: new Icon(Icons.music_note),
                         // TODO add an onTap event to listen to that music
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Auth())),
                     )
                     );
                   }
@@ -74,9 +74,11 @@ class HomeState extends State<Home> {
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
             child: new Text('API Stuff'),
         ),*/
+          ]
           ),
         ),
-      );
+      ),
+    );
   }
 
   _loadAuth() async {
