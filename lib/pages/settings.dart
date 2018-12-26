@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:spotify_nearby/backend/apiTesting.dart';
-import 'package:spotify_nearby/backend/themeService.dart' as themeService;
-import 'package:spotify_nearby/backend/settingsService.dart' as settingsService;
+import '../backend/apiTesting.dart';
+import '../backend/settingsService.dart' as settingsService;
+import '../backend/themeService.dart' as themeService;
 
 class Settings extends StatefulWidget {
   @override

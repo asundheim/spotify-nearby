@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
+import 'spotifyService.dart' as spotifyService;
 
 String loginURL = 'https://accounts.spotify.com/authorize'
     '?client_id=a08c7a5c79304ac1bb28fed5b687f0c1'
