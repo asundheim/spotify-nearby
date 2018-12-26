@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'settings.dart';
-
 import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
 import 'package:spotify_nearby/pages/auth.dart';
 import 'settings.dart';
-
 
 class Home extends StatefulWidget {
   @override
@@ -37,8 +33,8 @@ class HomeState extends State<Home> {
       body: Material(
         child: Center(
           child: GestureDetector(
-            onHorizontalDragDown: (e) => (e) => SnackBar(
-              content: Text("update"),
+            onHorizontalDragDown: (dynamic e) => (dynamic e) => const SnackBar(
+              content: Text('update'),
             ),
           child: Column(
             // TODO add gesture controller to refresh
@@ -49,9 +45,7 @@ class HomeState extends State<Home> {
               ),
               InkWell(
                 // TODO ontap launches your spotify
-                onTap: () => setState(() {
-                  _launchSpotify();
-                  }),
+                onTap: () => setState(() => _launchSpotify()),
               child: const ListTile(
                 title: Text('My Username', textAlign: TextAlign.center),
                 subtitle: Text('My Currently playing Song', textAlign: TextAlign.center),
@@ -66,8 +60,7 @@ class HomeState extends State<Home> {
                   itemBuilder: (BuildContext context, int index) {
                     const Padding(padding: EdgeInsets.all(16.0));
                     return InkWell(
-                      onTap: () => setState(() {
-                      }),
+                      onTap: () => setState(() {}),
                       child: ListTile(
                         title: const Text('PlaceHolder Title'),
                         subtitle: const Text('PlaceHolder Subtitle'),
@@ -90,8 +83,8 @@ class HomeState extends State<Home> {
     );
   }
 
-  _launchSpotify() async {
-    const url = "https://open.spotify.com/track";
+  Future<void> _launchSpotify() async {
+    const String url = 'https://open.spotify.com/track';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

@@ -56,7 +56,7 @@ class MyAppState extends State<MyApp> {
     // of children otherwise primary app color picker won't function on it
     return MaterialApp(
       title: 'Spotify Nearby',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: colorMap[_color],
         brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
       ),
