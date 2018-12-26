@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spotify_nearby/backend/apiTesting.dart';
 import 'package:spotify_nearby/backend/themeService.dart' as themeService;
 import 'package:spotify_nearby/backend/settingsService.dart' as settingsService;
 
 class Settings extends StatefulWidget {
-  SettingsState createState() => new SettingsState();
+  @override
+  SettingsState createState() => SettingsState();
 }
 
 class SettingsState extends State<Settings> {
@@ -14,7 +14,8 @@ class SettingsState extends State<Settings> {
   // Initialization and declaration on _isDark to prevent errors with async methods
   bool _isDark = false;
   bool _isSharing = true;
-  String _themeColorString = "blue";
+  // ignore: unused_field
+  String _themeColorString = 'blue';
 
   // Loads the initial state when opened and calls _loadDarkTheme to see if
   // button should be pressed
@@ -29,21 +30,21 @@ class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-        title: new Text("Settings"),
+      appBar: AppBar(
+        title: const Text('Settings'),
       ),
-      body: new Material(
-        child: new ListView(
+      body: Material(
+        child: ListView(
           shrinkWrap: true,
           padding: const EdgeInsets.all(16.0),
           children: <Widget>[
             _themeColor(),
             _newSettingSwitch(
-              title: "Currently Sharing", 
-              subtitle: "Toggles nearby sharing", 
+              title: 'Currently Sharing',
+              subtitle: 'Toggles nearby sharing',
               value: _isSharing, 
               onChange: _setSharing,
-              key: new Key('currentlySharing')
+              key: const Key('currentlySharing')
             ),
             _accountSetting(),
             _newSettingSwitch(
@@ -51,12 +52,12 @@ class SettingsState extends State<Settings> {
                 subtitle: 'Changes in app theme to dark',
                 value: _isDark,
                 onChange: _toggleDarkTheme,
-                key: new Key('toggleDarkTheme')
+                key: const Key('toggleDarkTheme')
             ),
             _textButton(
                 text: 'Spotify API stuff',
                 subtitle: 'shhhhh',
-                key: new Key('API')
+                key: const Key('API')
             ),
           ],
         ),
@@ -65,11 +66,12 @@ class SettingsState extends State<Settings> {
   }
 
   // Generic Widget for creating a simple switch setting, provide onChange with a function call
+  // ignore: strong_mode_implicit_dynamic_parameter, always_specify_types
   Widget _newSettingSwitch({String title, String subtitle, bool value, onChange, Key key}) {
-    return new ListTile(
-      title: new Text(title),
-      subtitle: new Text(subtitle),
-      trailing: new Switch(
+    return ListTile(
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: Switch(
           value: value,
           onChanged: onChange,
       ),
@@ -78,33 +80,36 @@ class SettingsState extends State<Settings> {
   }
 
   Widget _textButton({String text, String subtitle, Key key}) {
-    return new ListTile(
-      title: new Text(text),
-      subtitle: new Text(subtitle),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage())),
+    return ListTile(
+      title: Text(text),
+      subtitle: Text(subtitle),
+      onTap: () => Navigator.push<Object> (
+          context,
+          MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MyHomePage())
+      ),
       key: key,
     );
   }
 
   // Allows user to see connected account and logout
   Widget _accountSetting() {
-    return new ListTile(
-      title: Text("My account"),
-      subtitle: Text("Account Name"),
+    return const ListTile(
+      title: Text('My account'),
+      subtitle: Text('Account Name'),
       trailing: RaisedButton(
-        child: Text("Logout"),
+        child: Text('Logout'),
         onPressed: null)
     );
   }
 
   Widget _themeColor() {
-    return new ListTile(
-      title: Text("Primary Theme Color"),
-      subtitle: Text("Changes theme to selected color"),
+    return ListTile(
+      title: const Text('Primary Theme Color'),
+      subtitle: const Text('Changes theme to selected color'),
       trailing:
         // TODO Make color current color
         PopupMenuButton<String>(
-          icon: Icon(Icons.color_lens, color: null),
+          icon: const Icon(Icons.color_lens, color: null),
           onSelected: (String result) {
             setState(() {
               _setThemeColor(result);
@@ -112,32 +117,32 @@ class SettingsState extends State<Settings> {
         },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
-                value: "blue",
-                  child: Text("Blue")
+                value: 'blue',
+                  child: Text('Blue')
               ),
               const PopupMenuItem<String>(
-                  value: "green",
-                  child: Text("Green")
+                  value: 'green',
+                  child: Text('Green')
               ),
               const PopupMenuItem<String>(
-                  value: "red",
-                  child: Text("Red")
+                  value: 'red',
+                  child: Text('red')
               ),
               const PopupMenuItem<String>(
-                  value: "yellow",
-                  child: Text("Yellow")
+                  value: 'yellow',
+                  child: Text('yellow')
               ),
               const PopupMenuItem<String>(
-                  value: "pink",
-                  child: Text("Pink")
+                  value: 'pink',
+                  child: Text('Pink')
               ),
               const PopupMenuItem<String>(
-                  value: "purple",
-                  child: Text("Purple")
+                  value: 'purple',
+                  child: Text('Purple')
               ),
               const PopupMenuItem<String>(
-                  value: "cyan",
-                  child: Text("Cyan")
+                  value: 'cyan',
+                  child: Text('Cyan')
               ),
   ],
         ),
@@ -146,43 +151,43 @@ class SettingsState extends State<Settings> {
 
   // Loads the initial dark theme bool from SharedPreferences, if none are found
   // loads as false
-  _loadDarkTheme() async {
-    bool dark = await themeService.darkThemeEnabled();
+  Future<void> _loadDarkTheme() async {
+    final bool dark = await themeService.darkThemeEnabled();
     setState(() {
       _isDark = dark;
     });
   }
 
   // Saves the dark theme bool value to SharedPreferences
-  _toggleDarkTheme(bool value) async {
+  Future<void> _toggleDarkTheme(bool value) async {
     setState(() {
       themeService.toggleDarkTheme(value);
       _isDark = value;
     });
   }
 
-  _loadSharing() async {
-    bool sharing = await settingsService.isSharing();
+  Future<void> _loadSharing() async {
+    final bool sharing = await settingsService.isSharing();
     setState(() {
       _isSharing = sharing;
     });
   }
 
-  _setSharing(bool value) async {
+  Future<void> _setSharing(bool value) async {
     await settingsService.setSharing(value);
     setState(() {
       _isSharing = value;
     });
   }
 
-  _loadThemeColor() async {
-    String color = await themeService.getColor();
+  Future<void> _loadThemeColor() async {
+    final String color = await themeService.getColor();
     setState(() {
       _themeColorString = color;
     });
   }
 
-  _setThemeColor(String value) async {
+  Future<void> _setThemeColor(String value) async {
     await themeService.setColor(value);
     setState(() {
       _themeColorString = value;
