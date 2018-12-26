@@ -19,8 +19,8 @@ void main() {
 
   test('initial auth storage', () async {
     // Mock http calls
-    spotifyService.client = MockClient((request) async {
-      final mapJson = {
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> mapJson = <String, dynamic> {
         'access_token': 'testAccessToken',
         'expires_in': 3600,
         'refresh_token': 'testRefreshToken'
@@ -39,8 +39,8 @@ void main() {
 
   test('refresh auth storage', () async {
     // Mock http calls
-    spotifyService.client = MockClient((request) async {
-      final mapJson = {
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> mapJson = <String, dynamic> {
         'access_token': 'testAccessToken1',
         'expires_in': 3600
       };
@@ -55,8 +55,8 @@ void main() {
     expect(await spotifyService.getAuthToken(), 'testAccessToken1');
     expect(await spotifyService.getRefreshToken(), null);
 
-    spotifyService.client = MockClient((request) async {
-      final mapJson = {
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> mapJson = <String, dynamic> {
         'access_token': 'testAccessToken2',
         'expires_in': 3600,
         'refresh_token': 'testRefreshToken2'
@@ -72,8 +72,8 @@ void main() {
 
   test('detect expired token', () async {
     // Mock http calls
-    spotifyService.client = MockClient((request) async {
-      final mapJson = {
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> mapJson = <String, dynamic>{
         'access_token': 'testAccessToken',
         'expires_in': 1,
         'refresh_token': 'testRefreshToken'
@@ -85,7 +85,7 @@ void main() {
 
     expect(await spotifyService.authTokenExpired(), false);
 
-    await new Future.delayed(new Duration(milliseconds: 2000));
+    await Future<dynamic>.delayed(Duration(milliseconds: 2000));
 
     expect(await spotifyService.authTokenExpired(), true);
   });

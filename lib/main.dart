@@ -1,8 +1,11 @@
-import 'pages/home.dart';
-import 'pages/auth.dart';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:spotify_nearby/backend/themeService.dart' as themeService;
+
+import 'pages/auth.dart';
+import 'pages/home.dart';
+
 /*
  * TODO: Local Storage for Auth keys
  * TODO: Build basic UI controls
@@ -17,19 +20,19 @@ import 'package:spotify_nearby/backend/themeService.dart' as themeService;
  */
 
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
-  MyAppState createState() => new MyAppState();
+  @override
+  MyAppState createState() => MyAppState();
 }
 
 // Needs to be stateful to correctly change theme
 class MyAppState extends State<MyApp> {
 
-  // Variables used to manage app theme
-  String _color = "blue";
+  // Variables used to manage a dark theme
+  String _color = 'blue';
   bool _isDark = false;
-  //String _token;
 
   @override
   Widget build(BuildContext context) {
@@ -38,43 +41,44 @@ class MyAppState extends State<MyApp> {
     _loadColor();
     _loadDarkMode();
 
-    // Map for setting app color
-    Map<String, MaterialColor> colorMap = new Map();
-    colorMap['blue'] = Colors.blue;
-    colorMap['red'] = Colors.red;
-    colorMap['green'] = Colors.green;
-    colorMap['yellow'] = Colors.yellow;
-    colorMap['pink'] = Colors.pink;
-    colorMap['purple'] = Colors.purple;
-    colorMap['cyan'] = Colors.cyan;
+    final Map<String, MaterialColor> colorMap = <String, MaterialColor> {
+      'blue': Colors.blue,
+      'red': Colors.red,
+      'green': Colors.green,
+      'yellow': Colors.yellow,
+      'pink': Colors.pink,
+      'purple': Colors.purple,
+      'cyan': Colors.cyan
+    };
 
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
     // of children otherwise primary app color picker won't function on it
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Spotify Nearby',
       theme: new ThemeData(
         primarySwatch: colorMap[_color],
         brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
       ),
      initialRoute: '/',
+      // ignore: always_specify_types
       routes: {
-        '/': (context) => Home(),
-        '/auth': (context) => Auth(),
+        '/': (BuildContext context) => Home(),
+        '/auth': (BuildContext context) => Auth(),
       }
     );
   }
 
   // Accesses theme data stored in shared preferences "darkMode"
-  _loadDarkMode() async {
-    bool dark = await themeService.darkThemeEnabled();
+  Future<void> _loadDarkMode() async {
+    final bool dark = await themeService.darkThemeEnabled();
     setState(() {
       _isDark = dark;
     });
   }
 
-  _loadColor() async {
-    String currentColor = await themeService.getColor();
+  Future<void> _loadColor() async {
+    final String currentColor = await themeService.getColor();
     setState(() {
       _color = currentColor;
     });
