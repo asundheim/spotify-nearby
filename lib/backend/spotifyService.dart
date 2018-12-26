@@ -14,6 +14,7 @@ Future<Response> initialAuth(String code) {
     updateAuthToken(map['access_token']);
     updateRefreshToken(map['refresh_token']);
     updateExpireTime(map['expires_in'].toString());
+    updateCurrentUser(map['access_token']);
   });
 }
 
@@ -28,8 +29,19 @@ Future<Response> refreshAuth(String refreshToken) {
   });
 }
 
-Future<Response> getNowPlaying(String authToken) async {
-  return client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken));
+Future<String> getNowPlaying(String authToken) async {
+  String nowPlaying = 'Unable to get Now Playing';
+  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
+      .then((Response response) {
+        nowPlaying = json.decode(response.body)['item']['name'];
+      }
+  );
+  return nowPlaying;
+}
+
+Future<String> getCurrentUser() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('current_user');
 }
 
 Future<void> updateAuthToken(String authToken) async {
@@ -45,7 +57,18 @@ Future<void> updateExpireTime(String duration) async {
 
 Future<void> updateRefreshToken(String refreshToken) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString('refresh_token', refreshToken);
+  await prefs.setString('refresh_token', refreshToken);
+}
+
+Future<void> updateCurrentUser(String auth) async {
+  String user;
+  await client.get('https://api.spotify.com/v1/me', headers: authHeaders(auth))
+      .then((Response response) {
+        user = json.decode(response.body)['display_name'];
+      }
+  );
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('current_user', user);
 }
 
 Future<bool> tokenExists() async {
@@ -60,8 +83,7 @@ Future<String> getRefreshToken() async {
 
 Future<String> getAuthToken() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final String token = prefs.getString('auth_token');
-  return token;
+  return prefs.getString('auth_token');
 }
 
 Future<void> clearTokens() async {
@@ -70,6 +92,7 @@ Future<void> clearTokens() async {
   prefs.remove('refresh_token');
   prefs.remove('set_time');
   prefs.remove('expire_time');
+  prefs.remove('current_user');
 }
 
 Future<bool> authTokenExpired() async {

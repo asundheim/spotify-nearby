@@ -13,8 +13,7 @@ class _AuthState extends State<Auth> {
       child: InkWell(
         onTap: () {
           // Todo add auth page link
-          setState(() {
-          });
+          setState(() {});
         },
         splashColor: Colors.greenAccent,
         child: Center(

@@ -10,6 +10,15 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+  String currentUser = '';
+  String currentlyPlaying = '';
+
+  @override
+  void initState() {
+    loadCurrentUser();
+    loadCurrentlyPlaying();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +55,9 @@ class HomeState extends State<Home> {
               InkWell(
                 // TODO ontap launches your spotify
                 onTap: () => setState(() => _launchSpotify()),
-              child: const ListTile(
-                title: Text('My Username', textAlign: TextAlign.center),
-                subtitle: Text('My Currently playing Song', textAlign: TextAlign.center),
+              child: ListTile(
+                title: Text('Signed in as: $currentUser', textAlign: TextAlign.center),
+                subtitle: Text('Currently Playing: $currentlyPlaying', textAlign: TextAlign.center),
                 ),
               ),
               Expanded(
@@ -97,5 +106,16 @@ class HomeState extends State<Home> {
     if (!(await spotifyService.tokenExists())) {
       Navigator.pushNamed(context, '/auth');
     }
+  }
+
+  Future<void> loadCurrentUser() async {
+    final String user = await spotifyService.getCurrentUser();
+    setState(() => currentUser = user);
+  }
+
+  // TODO: this will need to be updated periodically
+  Future<void> loadCurrentlyPlaying() async {
+    final String playing = await spotifyService.getNowPlaying(await spotifyService.getAuthToken());
+    setState(() => currentlyPlaying = playing);
   }
 }
