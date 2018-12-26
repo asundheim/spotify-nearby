@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
@@ -85,12 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
         spotifyService.refreshAuth(await spotifyService.getRefreshToken()).then((Response result) => handleLogin());
       } else {
         // Test Spotify calls here
-        spotifyService.getNowPlaying(await spotifyService.getAuthToken()).then((Response response){
-          _setNowPlaying(json.decode(response.body)['item']['name']);
-        });
+        _setNowPlaying(await spotifyService.getNowPlaying(await spotifyService.getAuthToken()));
       }
       // Used to test first use flow
-      // spotifyService.clearToken();
+     spotifyService.clearTokens();
     } else {
       // Show the login page for first time account
       flutterWebviewPlugin.launch(loginURL);

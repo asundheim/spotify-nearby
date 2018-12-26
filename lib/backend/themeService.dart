@@ -6,10 +6,9 @@ Future<bool> darkThemeEnabled() async {
 }
 
 // Saves the dark theme bool value to SharedPreferences
-Future<bool> toggleDarkTheme(bool value) async {
+Future<void> toggleDarkTheme(bool value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setBool('darkMode', value);
-  return prefs.getBool('darkMode');
 }
 
 Future<String> getColor() async {

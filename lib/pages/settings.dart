@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../backend/apiTesting.dart';
 import '../backend/settingsService.dart' as settingsService;
 import '../backend/themeService.dart' as themeService;
+import '../backend/spotifyService.dart' as spotifyService;
 
 class Settings extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class SettingsState extends State<Settings> {
   bool _isSharing = true;
   // ignore: unused_field
   String _themeColorString = 'blue';
+  String _currentUser = 'Loading...';
 
   // Loads the initial state when opened and calls _loadDarkTheme to see if
   // button should be pressed
@@ -24,6 +26,7 @@ class SettingsState extends State<Settings> {
     _loadSharing();
     _loadDarkTheme();
     _loadThemeColor();
+    _loadCurrentUser();
     super.initState();
   }
 
@@ -93,10 +96,10 @@ class SettingsState extends State<Settings> {
 
   // Allows user to see connected account and logout
   Widget _accountSetting() {
-    return const ListTile(
-      title: Text('My account'),
-      subtitle: Text('Account Name'),
-      trailing: RaisedButton(
+    return ListTile(
+      title: const Text('My account'),
+      subtitle: Text(_currentUser),
+      trailing: const RaisedButton(
         child: Text('Logout'),
         onPressed: null)
     );
@@ -114,37 +117,37 @@ class SettingsState extends State<Settings> {
             setState(() {
               _setThemeColor(result);
             });
-        },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'blue',
-                  child: Text('Blue')
-              ),
-              const PopupMenuItem<String>(
-                  value: 'green',
-                  child: Text('Green')
-              ),
-              const PopupMenuItem<String>(
-                  value: 'red',
-                  child: Text('red')
-              ),
-              const PopupMenuItem<String>(
-                  value: 'yellow',
-                  child: Text('yellow')
-              ),
-              const PopupMenuItem<String>(
-                  value: 'pink',
-                  child: Text('Pink')
-              ),
-              const PopupMenuItem<String>(
-                  value: 'purple',
-                  child: Text('Purple')
-              ),
-              const PopupMenuItem<String>(
-                  value: 'cyan',
-                  child: Text('Cyan')
-              ),
-  ],
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'blue',
+                child: Text('Blue')
+            ),
+            const PopupMenuItem<String>(
+                value: 'green',
+                child: Text('Green')
+            ),
+            const PopupMenuItem<String>(
+                value: 'red',
+                child: Text('Red')
+            ),
+            const PopupMenuItem<String>(
+                value: 'yellow',
+                child: Text('Yellow')
+            ),
+            const PopupMenuItem<String>(
+                value: 'pink',
+                child: Text('Pink')
+            ),
+            const PopupMenuItem<String>(
+                value: 'purple',
+                child: Text('Purple')
+            ),
+            const PopupMenuItem<String>(
+                value: 'cyan',
+                child: Text('Cyan')
+            ),
+          ],
         ),
       );
   }
@@ -153,9 +156,7 @@ class SettingsState extends State<Settings> {
   // loads as false
   Future<void> _loadDarkTheme() async {
     final bool dark = await themeService.darkThemeEnabled();
-    setState(() {
-      _isDark = dark;
-    });
+    setState(() => _isDark = dark);
   }
 
   // Saves the dark theme bool value to SharedPreferences
@@ -168,29 +169,26 @@ class SettingsState extends State<Settings> {
 
   Future<void> _loadSharing() async {
     final bool sharing = await settingsService.isSharing();
-    setState(() {
-      _isSharing = sharing;
-    });
+    setState(() => _isSharing = sharing);
   }
 
   Future<void> _setSharing(bool value) async {
     await settingsService.setSharing(value);
-    setState(() {
-      _isSharing = value;
-    });
+    setState(() => _isSharing = value);
   }
 
   Future<void> _loadThemeColor() async {
     final String color = await themeService.getColor();
-    setState(() {
-      _themeColorString = color;
-    });
+    setState(() => _themeColorString = color);
   }
 
   Future<void> _setThemeColor(String value) async {
     await themeService.setColor(value);
-    setState(() {
-      _themeColorString = value;
-    });
+    setState(() => _themeColorString = value);
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final String user = await spotifyService.getCurrentUser();
+    setState(() => _currentUser = user);
   }
 }

@@ -6,13 +6,12 @@ Future<bool> isSharing() async {
   return prefs.getBool('sharing') ?? true;
 }
 
-Future<bool> setSharing(bool value) async {
+Future<void> setSharing(bool value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setBool('sharing', value);
-  return value;
 }
 
-Future<void> clearPrefs() async{
+Future<void> clearPrefs() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove('sharing');
 }
