@@ -8,13 +8,10 @@ import 'pages/home.dart';
 
 /*
  * TODO: Local Storage for Auth keys
- * TODO: Build basic UI controls
  * TODO: Set up Nearby for Android
  * TODO: Set up Nearby for iOS
  * TODO: Basic Spotify Auth flow
  * TODO: Transmit Spotify data
- * TODO: Add UI for list of nearby users
- * TODO: Add UI page for account
  * TODO: Implement Nearby Sharing toggle in settings
  * TODO: Implement Logout in settings
  */
@@ -33,6 +30,9 @@ class MyAppState extends State<MyApp> {
   // Variables used to manage a dark theme
   String _color = 'blue';
   bool _isDark = false;
+
+  // TODO add to the token from the auth page so it reroutes, also shared pref if not already
+  static String token;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class MyAppState extends State<MyApp> {
         primarySwatch: colorMap[_color],
         brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
       ),
-     initialRoute: '/',
+     initialRoute: (token == null) ? '/auth' : '/',
       // ignore: always_specify_types
       routes: {
         '/': (BuildContext context) => Home(),

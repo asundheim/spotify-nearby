@@ -12,6 +12,11 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   String currentUser = '';
   String currentlyPlaying = '';
+  // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
+  static List<String> userAccount = ['DarthEvandar','Budde25'];
+  static List<String> songTitle = ['Favorite Song', 'Fireflies'];
+  static List<String> songUrl = ['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
+  static List<List<String>> titleData = [userAccount,songTitle,songUrl];
 
   @override
   void initState() {
@@ -54,7 +59,7 @@ class HomeState extends State<Home> {
               ),
               InkWell(
                 // TODO ontap launches your spotify
-                onTap: () => setState(() => _launchSpotify()),
+                onTap: () => setState(() => _launchSpotify('')),
               child: ListTile(
                 title: Text('Signed in as: $currentUser', textAlign: TextAlign.center),
                 subtitle: Text('Currently Playing: $currentlyPlaying', textAlign: TextAlign.center),
@@ -63,7 +68,7 @@ class HomeState extends State<Home> {
               Expanded(
               child: ListView.builder(
                 // Max 50 items for now, increase for each nearby
-                  itemCount: 50,
+                  itemCount: titleData[0].length,
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(16.0),
                   itemBuilder: (BuildContext context, int index) {
@@ -71,15 +76,12 @@ class HomeState extends State<Home> {
                     return InkWell(
                       onTap: () => setState(() {}),
                       child: ListTile(
-                        title: const Text('PlaceHolder Title'),
-                        subtitle: const Text('PlaceHolder Subtitle'),
+                        title: Text(titleData[0][index]),
+                        subtitle: Text(titleData[1][index]),
                         trailing: const Icon(Icons.music_note),
                         // TODO add an onTap event to listen to that music
-                        onTap: () => Navigator.push<Object>(
-                            context,
-                            MaterialPageRoute<dynamic>(builder: (BuildContext context) => Auth())
+                        onTap: () => _launchSpotify(titleData[2][index])
                         ),
-                    )
                     );
                   }
               ),
@@ -92,8 +94,8 @@ class HomeState extends State<Home> {
     );
   }
 
-  Future<void> _launchSpotify() async {
-    const String url = 'https://open.spotify.com/track';
+  Future<void> _launchSpotify(String track) async {
+    String url = 'https://open.spotify.com/track/' + track;
     if (await canLaunch(url)) {
       await launch(url);
     } else {

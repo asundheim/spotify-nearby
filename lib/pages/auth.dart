@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotify_nearby/main.dart';
 
 class Auth extends StatefulWidget {
   @override
@@ -13,7 +14,11 @@ class _AuthState extends State<Auth> {
       child: InkWell(
         onTap: () {
           // Todo add auth page link
-          setState(() {});
+          setState(() {
+            MyAppState.token = 'value';
+            Navigator.pop(context);
+          }
+          );
         },
         splashColor: Colors.greenAccent,
         child: Center(

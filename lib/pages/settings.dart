@@ -43,6 +43,13 @@ class SettingsState extends State<Settings> {
           children: <Widget>[
             _themeColor(),
             _newSettingSwitch(
+                title: 'Dark Theme',
+                subtitle: 'Changes in app theme to dark',
+                value: _isDark,
+                onChange: _toggleDarkTheme,
+                key: const Key('toggleDarkTheme')
+            ),
+            _newSettingSwitch(
               title: 'Currently Sharing',
               subtitle: 'Toggles nearby sharing',
               value: _isSharing, 
@@ -50,13 +57,6 @@ class SettingsState extends State<Settings> {
               key: const Key('currentlySharing')
             ),
             _accountSetting(),
-            _newSettingSwitch(
-                title: 'Dark Theme',
-                subtitle: 'Changes in app theme to dark',
-                value: _isDark,
-                onChange: _toggleDarkTheme,
-                key: const Key('toggleDarkTheme')
-            ),
             _textButton(
                 text: 'Spotify API stuff',
                 subtitle: 'shhhhh',
@@ -98,7 +98,7 @@ class SettingsState extends State<Settings> {
   Widget _accountSetting() {
     return ListTile(
       title: const Text('My account'),
-      subtitle: Text(_currentUser),
+      subtitle: Text((_currentUser == null) ? 'Not signed in' : _currentUser),
       trailing: const RaisedButton(
         child: Text('Logout'),
         onPressed: null)
