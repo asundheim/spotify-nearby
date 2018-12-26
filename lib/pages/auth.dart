@@ -8,7 +8,7 @@ class Auth extends StatefulWidget {
 class _AuthState extends State<Auth> {
   @override
   Widget build(BuildContext context) {
-    return new Material(
+    return Material(
       color: Colors.green,
       child: InkWell(
         onTap: () {
@@ -22,27 +22,26 @@ class _AuthState extends State<Auth> {
             padding: const EdgeInsets.only(top: 100),
             child: Column(
               children: <Widget>[
-                Text(
-                  "Please Authorize Spotify",
+                const Text(
+                  'Please Authorize Spotify',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16.0),
                   child: Text(
-                      "Click anywhere",
+                      'Tap anywhere',
                     style: TextStyle(
                       fontSize: 24,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: new Center(
-                      child: new Image(
-                          image:
-                          AssetImage('assets/res/spotify.png'),
+                  child: Center(
+                      child: Image(
+                        image: const AssetImage('assets/res/spotify.png'),
                         width: 112.0,
                         height: 112.0,
                         color: Colors.green[300],
