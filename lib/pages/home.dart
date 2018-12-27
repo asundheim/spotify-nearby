@@ -76,8 +76,8 @@ class HomeState extends State<Home> {
                     return InkWell(
                       onTap: () => setState(() {}),
                       child: ListTile(
-                        title: Text(titleData[0][index]),
-                        subtitle: Text(titleData[1][index]),
+                        title: Text(titleData[1][index]),
+                        subtitle: Text(titleData[0][index]),
                         trailing: const Icon(Icons.music_note),
                         // TODO add an onTap event to listen to that music
                         onTap: () => _launchSpotify(titleData[2][index])
