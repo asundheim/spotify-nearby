@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../backend/apiTesting.dart';
 import '../backend/settingsService.dart' as settingsService;
-import '../backend/themeService.dart' as themeService;
 import '../backend/spotifyService.dart' as spotifyService;
+import '../backend/themeService.dart' as themeService;
+
 
 class Settings extends StatefulWidget {
   @override

@@ -13,10 +13,10 @@ class HomeState extends State<Home> {
   String currentUser = '';
   String currentlyPlaying = '';
   // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
-  static List<String> userAccount = ['DarthEvandar','Budde25', 'peanut'];
-  static List<String> songTitle = ['Favorite Song', 'Fireflies'];
-  static List<String> songUrl = ['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
-  static List<List<String>> titleData = [userAccount,songTitle,songUrl];
+  static List<String> userAccount = <String>['DarthEvandar','Budde25', 'peanut'];
+  static List<String> songTitle = <String>['My Favorite Song', 'Fireflies'];
+  static List<String> songUrl = <String>['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
+  static List<List<String>> titleData = <List<String>>[userAccount,songTitle,songUrl];
   static int _listLength = 0;
 
   @override
@@ -79,7 +79,6 @@ class HomeState extends State<Home> {
                         title: Text(titleData[1][index]),
                         subtitle: Text(titleData[0][index]),
                         trailing: const Icon(Icons.music_note),
-                        // TODO add an onTap event to listen to that music
                         onTap: () => _launchSpotify(titleData[2][index])
                         ),
                     );
@@ -104,7 +103,7 @@ class HomeState extends State<Home> {
   }
 
   Future<void> _launchSpotify(String track) async {
-    String url = 'https://open.spotify.com/track/' + track;
+    final String url = 'https://open.spotify.com/track/' + track;
     if (await canLaunch(url)) {
       await launch(url);
     } else {
