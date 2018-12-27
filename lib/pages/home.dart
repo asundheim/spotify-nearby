@@ -103,7 +103,7 @@ class HomeState extends State<Home> {
   }
 
   Future<void> _launchSpotify(String track) async {
-    final String url = 'https://open.spotify.com/track/' + track;
+    final String url = 'https://open.spotify.com/track/$track';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
