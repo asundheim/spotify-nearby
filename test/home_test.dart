@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spotify_nearby/pages/settings.dart';
+import 'package:spotify_nearby/pages/home.dart';
 import 'package:spotify_nearby/main.dart';
 import 'package:mockito/mockito.dart';
 import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
@@ -8,7 +9,7 @@ import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
 void main() {
 
   testWidgets('tapping settings should redirect to settings page', (WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget( MaterialApp(home: Home()));
 
     expect(find.byIcon(Icons.settings), findsOneWidget);
 
