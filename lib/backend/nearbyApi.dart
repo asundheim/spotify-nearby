@@ -14,13 +14,16 @@ class NearbyState extends State<Nearby> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Column(
-          children: <Widget>[
-            RaisedButton(onPressed: _startNearby),
-            Text(_result),
-          ],
+    return Material(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 50.0),
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              RaisedButton(onPressed: _startNearby),
+              Text(_result),
+            ],
+          ),
         ),
       ),
     );
@@ -33,15 +36,12 @@ class NearbyState extends State<Nearby> {
   Future<void> _startNearby() async {
     String out;
     try {
-      final int result = await platform.invokeMethod('start');
-      out = 'Battery level at $result % .';
+      final String result = await platform.invokeMethod('start');
+      out = 'result: $result';
     } on PlatformException catch (e) {
       out = "Failed to start nearby: '${e.message}'.";
     }
-
-    setState(() {
-      _result = out;
-    });
+    setState(() => _result = out);
   }
 }
 

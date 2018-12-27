@@ -64,11 +64,6 @@ class SettingsState extends State<Settings> {
                 subtitle: 'shhhhh',
                 key: const Key('API'),
             ),
-            _textButton(
-              text: 'Nearby API stuff',
-              subtitle: 'shhhhh',
-                key: const Key('NEARBYAPI')
-            ),
             ListTile(
             title: Text('Nearby API stuff'),
             subtitle: Text('keep out'),

@@ -201,9 +201,12 @@ public class MainActivity extends FlutterActivity {
               new MethodCallHandler() {
                   @Override
                   public void onMethodCall(MethodCall call, Result result) {
+                      String str = "Searching";
                       if (call.method.equals("start")) {
                           findOther();
-                          result.success("Searching");
+                          result.success(str);
+                      } else {
+                          result.error("UNAVAILABLE", "NOT AVAILABLE", null);
                       }
                   }
               });
