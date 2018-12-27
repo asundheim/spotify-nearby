@@ -1,4 +1,0 @@
-com.anderssundheim.spotifynearby
-drawable launch_background
-mipmap ic_launcher
-style LaunchTheme
