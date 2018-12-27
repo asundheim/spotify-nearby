@@ -4,6 +4,7 @@ import '../backend/apiTesting.dart';
 import '../backend/settingsService.dart' as settingsService;
 import '../backend/spotifyService.dart' as spotifyService;
 import '../backend/themeService.dart' as themeService;
+import 'package:spotify_nearby/backend/nearbyApi.dart';
 
 
 class Settings extends StatefulWidget {
@@ -61,8 +62,14 @@ class SettingsState extends State<Settings> {
             _textButton(
                 text: 'Spotify API stuff',
                 subtitle: 'shhhhh',
-                key: const Key('API')
+                key: const Key('API'),
             ),
+            ListTile(
+            title: Text('Nearby API stuff'),
+            subtitle: Text('keep out'),
+             onTap: () => Navigator.push<Object> (context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => Nearby())
+        ),
+            )
           ],
         ),
       ),
@@ -83,13 +90,11 @@ class SettingsState extends State<Settings> {
     );
   }
 
-  Widget _textButton({String text, String subtitle, Key key}) {
+  Widget _textButton({String text, String subtitle, Key key,} ) {
     return ListTile(
       title: Text(text),
       subtitle: Text(subtitle),
-      onTap: () => Navigator.push<Object> (
-          context,
-          MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MyHomePage())
+      onTap: () => Navigator.push<Object> (context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MyHomePage())
       ),
       key: key,
     );
