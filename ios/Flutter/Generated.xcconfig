@@ -1,0 +1,9 @@
+// This is a generated file; do not edit or check into version control.
+FLUTTER_ROOT=C:\Users\budde25\flutter
+FLUTTER_APPLICATION_PATH=C:\Users\budde25\Desktop\spotify-nearby\spotify_nearby
+FLUTTER_TARGET=lib/main.dart
+FLUTTER_BUILD_DIR=build
+SYMROOT=${SOURCE_ROOT}/../build\ios
+FLUTTER_FRAMEWORK_DIR=C:\Users\budde25\flutter\bin\cache\artifacts\engine\ios
+FLUTTER_BUILD_NAME=1.0.0
+FLUTTER_BUILD_NUMBER=1
