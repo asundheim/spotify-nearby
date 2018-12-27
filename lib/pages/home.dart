@@ -13,10 +13,11 @@ class HomeState extends State<Home> {
   String currentUser = '';
   String currentlyPlaying = '';
   // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
-  static List<String> userAccount = ['DarthEvandar','Budde25'];
+  static List<String> userAccount = ['DarthEvandar','Budde25', 'peanut'];
   static List<String> songTitle = ['Favorite Song', 'Fireflies'];
   static List<String> songUrl = ['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
   static List<List<String>> titleData = [userAccount,songTitle,songUrl];
+  static int _listLength = 0;
 
   @override
   void initState() {
@@ -28,8 +29,7 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
-    // Launch auth page, currently broken don't uncomment
-    //_loadAuth();
+    _listLengthMin();
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +68,7 @@ class HomeState extends State<Home> {
               Expanded(
               child: ListView.builder(
                 // Max 50 items for now, increase for each nearby
-                  itemCount: titleData[0].length,
+                  itemCount: _listLength,
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(16.0),
                   itemBuilder: (BuildContext context, int index) {
@@ -92,6 +92,15 @@ class HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  void _listLengthMin() {
+    setState(() {
+      for (int i = 0; i < 2; i++) {
+        userAccount.length < songTitle.length ? _listLength = userAccount.length : _listLength = songTitle.length;
+        userAccount.length < songUrl.length ? _listLength = userAccount.length : _listLength = songUrl.length;
+      }
+    });
   }
 
   Future<void> _launchSpotify(String track) async {
