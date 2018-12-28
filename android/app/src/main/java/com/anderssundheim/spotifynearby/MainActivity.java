@@ -2,6 +2,7 @@ package com.anderssundheim.spotifynearby;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -33,6 +34,9 @@ import com.google.android.gms.nearby.connection.PayloadTransferUpdate.Status;
 import com.google.android.gms.nearby.connection.Strategy;
 
 import java.util.Random;
+import java.util.UUID;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class MainActivity extends FlutterActivity {
@@ -56,22 +60,24 @@ public class MainActivity extends FlutterActivity {
 
 
     private static final Strategy STRATEGY = Strategy.P2P_STAR;
-    private static final String NAME = "Device: " + rand.nextInt(1000000);
+    private static final String ID = UUID.randomUUID().toString();
     private static final String TAG = "SpotifyNearby";
 
     // Non final
     private String otherEndpointId;
     private String otherName;
+    private String otherID;
 
     // Handle for nearby
     private ConnectionsClient connectionsClient;
 
     // Callbacks for receiving payloads
+    @TargetApi(19)
     private final PayloadCallback payloadCallback =
             new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
-                    // TODO add here
+                    otherID = String.valueOf(new String(payload.asBytes(),UTF_8));
                 }
 
                 @Override
@@ -88,7 +94,7 @@ public class MainActivity extends FlutterActivity {
                 @Override
                 public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
                     Log.i(TAG, "onEndpointFound: endpoint found, connecting");
-                    connectionsClient.requestConnection(NAME, endpointId, connectionLifecycleCallback);
+                    connectionsClient.requestConnection(ID, endpointId, connectionLifecycleCallback);
                 }
 
                 @Override
@@ -110,8 +116,8 @@ public class MainActivity extends FlutterActivity {
                     if (result.getStatus().isSuccess()) {
                         Log.i(TAG, "onConnectionResult: connection successful");
 
-                        connectionsClient.stopDiscovery();
-                        connectionsClient.stopAdvertising();
+                        //connectionsClient.stopDiscovery();
+                        //connectionsClient.stopAdvertising();
 
                        otherEndpointId = endpointId;
                     } else {
@@ -124,6 +130,77 @@ public class MainActivity extends FlutterActivity {
                     Log.i(TAG, "onDisconnected: disconnected from the opponent");
                 }
             };
+
+
+    public void findOther() {
+        startAdvertising();
+        startDiscovery();
+        Log.i(TAG, "Searching");
+    }
+
+    /** Starts looking for other players using Nearby Connections. */
+    private void startDiscovery() {
+        // Note: Discovery may fail. To keep this demo simple, we don't handle failures.
+        connectionsClient.startDiscovery(
+                getPackageName(), endpointDiscoveryCallback,
+                new DiscoveryOptions.Builder().setStrategy(STRATEGY).build());
+    }
+
+    /** Broadcasts our presence using Nearby Connections so other players can find us. */
+    private void startAdvertising() {
+        // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
+        connectionsClient.startAdvertising(
+                ID, getPackageName(), connectionLifecycleCallback,
+                new AdvertisingOptions.Builder().setStrategy(STRATEGY).build());
+    }
+
+    @TargetApi(19)
+    private void sendUsername(String ID) {
+        connectionsClient.sendPayload(
+                otherEndpointId, Payload.fromBytes(ID.getBytes(UTF_8)));
+    }
+
+    @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    GeneratedPluginRegistrant.registerWith(this);
+
+      connectionsClient = Nearby.getConnectionsClient(this);
+
+
+      new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
+              new MethodCallHandler() {
+                  @Override
+                  public void onMethodCall(MethodCall call, Result result) {
+                      if (call.method.equals("start")) {
+                          findOther();
+                          result.success("Searching");
+                      }
+                      if (call.method.equals("connections")) {
+                          result.success(otherName);
+                      }
+                      if (call.method.equals("id")) {
+                          result.success(ID);
+                      }
+                      if (call.method.equals("payload")) {
+                          sendUsername(ID);
+                          result.success("yep");
+                      }
+                      if (call.method.equals("payloadResults")) {
+                          result.success(otherID);
+                      }
+
+
+
+                      /*else {
+                          result.error("UNAVAILABLE", "NOT AVAILABLE", null);
+                      }*/
+                  }
+              });
+
+
+  }
+
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -166,49 +243,4 @@ public class MainActivity extends FlutterActivity {
         }
         recreate();
     }
-
-    public void findOther() {
-        startAdvertising();
-        startDiscovery();
-        Log.i(TAG, "Searching");
-    }
-
-    /** Starts looking for other players using Nearby Connections. */
-    private void startDiscovery() {
-        // Note: Discovery may fail. To keep this demo simple, we don't handle failures.
-        connectionsClient.startDiscovery(
-                getPackageName(), endpointDiscoveryCallback,
-                new DiscoveryOptions.Builder().setStrategy(STRATEGY).build());
-    }
-
-    /** Broadcasts our presence using Nearby Connections so other players can find us. */
-    private void startAdvertising() {
-        // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
-        connectionsClient.startAdvertising(
-                NAME, getPackageName(), connectionLifecycleCallback,
-                new AdvertisingOptions.Builder().setStrategy(STRATEGY).build());
-    }
-
-    @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    GeneratedPluginRegistrant.registerWith(this);
-
-      connectionsClient = Nearby.getConnectionsClient(this);
-
-
-      new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
-              new MethodCallHandler() {
-                  @Override
-                  public void onMethodCall(MethodCall call, Result result) {
-                      String str = "Searching";
-                      if (call.method.equals("start")) {
-                          findOther();
-                          result.success(str);
-                      } else {
-                          result.error("UNAVAILABLE", "NOT AVAILABLE", null);
-                      }
-                  }
-              });
-  }
 }

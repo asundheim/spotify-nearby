@@ -20,8 +20,13 @@ class NearbyState extends State<Nearby> {
         child: Center(
           child: Column(
             children: <Widget>[
-              RaisedButton(onPressed: _startNearby),
+              RaisedButton(onPressed: _startNearby, child: Text('Start'),),
+              RaisedButton(onPressed: _onPressed, child: Text('Refresh'),),
+              RaisedButton(onPressed: _payload, child: Text('Send Payload'),),
               Text(_result),
+              Text('ID: $_id'),
+              Text('Connections: $_connections'),
+              Text('Payload: $_otherID')
             ],
           ),
         ),
@@ -32,6 +37,15 @@ class NearbyState extends State<Nearby> {
 
   // Get battery level.
   String _result = 'blank';
+  String _id = 'blank';
+  String _connections = 'blank';
+  String _otherID = 'blank';
+
+  void _onPressed() {
+  _getConnections();
+  _myID();
+  _payloadR();
+}
 
   Future<void> _startNearby() async {
     String out;
@@ -42,6 +56,50 @@ class NearbyState extends State<Nearby> {
       out = "Failed to start nearby: '${e.message}'.";
     }
     setState(() => _result = out);
+  }
+
+  Future<void> _getConnections() async {
+    String out;
+    try {
+      final String result = await platform.invokeMethod('connections');
+      out = result;
+    } on PlatformException catch (e) {
+      out = "Error gc: '${e.message}'.";
+    }
+    setState(() => _connections = out);
+  }
+
+  Future<void> _myID() async {
+    String out;
+    try {
+      final String result = await platform.invokeMethod('id');
+      out = result;
+    } on PlatformException catch (e) {
+      out = "Error id: '${e.message}'.";
+    }
+    setState(() => _id = out);
+  }
+
+  Future<void> _payload() async {
+    String out;
+    try {
+      final String result = await platform.invokeMethod('payload');
+      out = result;
+    } on PlatformException catch (e) {
+      out = "Error id: '${e.message}'.";
+    }
+    //setState(() => _id = out);
+  }
+
+  Future<void> _payloadR() async {
+    String out;
+    try {
+      final String result = await platform.invokeMethod('payloadResults');
+      out = result;
+    } on PlatformException catch (e) {
+      out = "Error id: '${e.message}'.";
+    }
+    setState(() => _otherID = out);
   }
 }
 
