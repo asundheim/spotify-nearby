@@ -9,5 +9,3 @@ build/
 ios/.generated/
 packages
 .flutter-plugins
-*.iml
-local.properties
