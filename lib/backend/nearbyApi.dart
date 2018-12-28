@@ -44,7 +44,7 @@ class NearbyState extends State<Nearby> {
   void _onPressed() {
   _getConnections();
   _myID();
-  _payloadR();
+  _payloadResults();
 }
 
   Future<void> _startNearby() async {
@@ -91,7 +91,7 @@ class NearbyState extends State<Nearby> {
     //setState(() => _id = out);
   }
 
-  Future<void> _payloadR() async {
+  Future<void> _payloadResults() async {
     String out;
     try {
       final String result = await platform.invokeMethod('payloadResults');
