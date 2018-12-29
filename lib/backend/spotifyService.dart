@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
-import 'storageService.dart';
 
 String client_id = 'a08c7a5c79304ac1bb28fed5b687f0c1';
 String client_secret = '2d710351a8ef47c18e29c875da325b7f';
@@ -31,14 +30,18 @@ Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
     });
 }
 
-Future<String> getNowPlaying(String authToken) async {
-  String nowPlaying = 'Unable to get Now Playing';
+Future<Map<String, dynamic>> getNowPlaying(String authToken) async {
+  Map<String, dynamic> map;
   await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
-      .then((Response response) {
-        nowPlaying = json.decode(response.body)['item']['name'];
-      }
-  );
-  return nowPlaying;
+      .then<Response>((Response response) => map = json.decode(response.body)['item']);
+  return map;
+}
+
+Future<Map<String, dynamic>> getUserData(String authToken) async {
+  Map<String, dynamic> map;
+  client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
+      .then<Response>((Response response) => map = json.decode(response.body));
+  return map;
 }
 
 String getCurrentUser(SharedPreferences prefs) =>

@@ -12,8 +12,7 @@ String loginURL = 'https://accounts.spotify.com/authorize'
     '&redirect_uri=http://localhost:4200/spotify'
     '&scope=user-read-currently-playing'
     '&show_dialog=true';
-const String kAndroidUserAgent =
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
+
 String nowPlaying = '';
 
 class MyHomePage extends StatefulWidget {
@@ -80,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> handleLogin() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Check for first time
     if (spotifyService.tokenExists(prefs)) {
       // If token has expired, update it
@@ -88,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         spotifyService.refreshAuth(spotifyService.getRefreshToken(prefs), prefs).then((Response result) => handleLogin());
       } else {
         // Test Spotify calls here
-        _setNowPlaying(await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs)));
+        _setNowPlaying((await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs)))['name']);
       }
       // Used to test first use flow
      spotifyService.clearTokens(prefs);

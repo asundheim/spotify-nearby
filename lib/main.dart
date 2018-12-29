@@ -34,43 +34,43 @@ class MyAppState extends State<MyApp> {
   // Variables used to manage a dark theme
   String _color = 'blue';
   bool _isDark = false;
-  final Map<String, MaterialColor> colorMap = <String, MaterialColor> {
-    'blue': Colors.blue,
-    'red': Colors.red,
-    'green': Colors.green,
-    'yellow': Colors.yellow,
-    'pink': Colors.pink,
-    'purple': Colors.purple,
-    'cyan': Colors.cyan
-  };
-
   @override
-  Widget build(BuildContext context) {
-
-    // loads theme data and color data
+  void initState() {
     _loadColor();
     _loadDarkMode();
     _getAuth();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Spotify Nearby',
         theme: ThemeData(
-          primarySwatch: colorMap[_color],
+          primarySwatch: themeService.mapColor(_color),
           brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
         ),
-        home: FutureBuilder<SharedPreferences>(
-          future: getStorageInstance(),
-          builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
-            if (snapshot.hasData) {
-              if (spotifyService.tokenExists(snapshot.data)) {
-                return Home();
+        initialRoute: '/',
+        // ignore: always_specify_types
+        routes: {
+          '/': (BuildContext context) => FutureBuilder<SharedPreferences>(
+            future: getStorageInstance(),
+            builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+              if (snapshot.hasData) {
+                if (spotifyService.tokenExists(snapshot.data)) {
+                  return Home();
+                } else {
+                  return Auth();
+                }
+                } else {
+                  // Splash screen goes here
+                  return const Text('loading');
+                }
               }
-              return Auth();
-            } else {
-              // Splash screen goes here
-              return Text('loading');
-            }
-          }
-        ),
+            ),
+          '/home': (BuildContext context) => Home(),
+          '/auth': (BuildContext context) => Auth(),
+        }
     );
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
@@ -79,21 +79,21 @@ class MyAppState extends State<MyApp> {
 
   // Accesses theme data stored in shared preferences "darkMode"
   Future<void> _loadDarkMode() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() {
       _isDark = themeService.darkThemeEnabled(prefs);
     });
   }
 
   Future<void> _loadColor() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() {
       _color = themeService.getColor(prefs);
     });
   }
 
   Future<String> _getAuth() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     if (spotifyService.tokenExists(prefs)) {
       if (spotifyService.authTokenExpired(prefs)) {
         spotifyService.refreshAuth(spotifyService.getRefreshToken(prefs), prefs);

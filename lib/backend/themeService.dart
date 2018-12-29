@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 bool darkThemeEnabled(SharedPreferences prefs) =>
     prefs.getBool('darkMode') ?? false;
@@ -16,3 +17,13 @@ void setColor(String color, SharedPreferences prefs) =>
 
 void clearPrefs(SharedPreferences prefs) => prefs.remove('darkMode');
 
+MaterialColor mapColor(String color) =>
+  <String, MaterialColor> {
+    'blue': Colors.blue,
+    'red': Colors.red,
+    'green': Colors.green,
+    'yellow': Colors.yellow,
+    'pink': Colors.pink,
+    'purple': Colors.purple,
+    'cyan': Colors.cyan
+  }[color];

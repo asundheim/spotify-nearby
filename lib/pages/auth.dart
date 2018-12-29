@@ -1,5 +1,16 @@
+import 'dart:async';
+import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:spotify_nearby/main.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import '../backend/spotifyService.dart' as spotifyService;
+import '../backend/storageService.dart';
+
+String loginURL = 'https://accounts.spotify.com/authorize'
+    '?client_id=a08c7a5c79304ac1bb28fed5b687f0c1'
+    '&response_type=code'
+    '&redirect_uri=http://localhost:4200/spotify'
+    '&scope=user-read-currently-playing'
+    '&show_dialog=true';
 
 class Auth extends StatefulWidget {
   @override
@@ -7,18 +18,43 @@ class Auth extends StatefulWidget {
 }
 
 class _AuthState extends State<Auth> {
+  final FlutterWebviewPlugin flutterWebviewPlugin = FlutterWebviewPlugin();
+  StreamSubscription<dynamic> _onDestroy;
+  StreamSubscription<String> _onUrlChanged;
+
+  @override
+  void initState() {
+    flutterWebviewPlugin.close();
+
+    _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) async {
+      if (mounted) {
+        if (url.split('?')[0] == 'http://localhost:4200/spotify') {
+          setState(() {
+            flutterWebviewPlugin.close();
+          });
+          await spotifyService.initialAuth(url.split('=')[1], await getStorageInstance());
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/home');
+        }
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _onDestroy.cancel();
+    _onUrlChanged.cancel();
+    flutterWebviewPlugin.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.green,
       child: InkWell(
-        onTap: () {
-          // Todo add auth page link
-          setState(() {
-            Navigator.pop(context);
-          }
-          );
-        },
+        onTap: () => setState(() => flutterWebviewPlugin.launch(loginURL)),
         splashColor: Colors.greenAccent,
         child: Center(
           child: Padding(

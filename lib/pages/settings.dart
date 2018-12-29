@@ -62,15 +62,15 @@ class SettingsState extends State<Settings> {
             ),
             _accountSetting(),
             _textButton(
-                text: 'Spotify API stuff',
-                subtitle: 'shhhhh',
-                key: const Key('API'),
+              text: 'Spotify API stuff',
+              subtitle: 'shhhhh',
+              key: const Key('API'),
             ),
             ListTile(
-            title: Text('Nearby API stuff'),
-            subtitle: Text('keep out'),
-             onTap: () => Navigator.push<Object> (context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => Nearby())
-        ),
+              title: const Text('Nearby API stuff'),
+              subtitle: const Text('keep out'),
+              onTap: () => Navigator.push<Object> (context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => Nearby())
+            ),
             )
           ],
         ),
@@ -105,11 +105,13 @@ class SettingsState extends State<Settings> {
   // Allows user to see connected account and logout
   Widget _accountSetting() {
     return ListTile(
-      title: const Text('My account'),
-      subtitle: Text((_currentUser == null) ? 'Not signed in' : _currentUser),
-      trailing: const RaisedButton(
-        child: Text('Logout'),
-        onPressed: null)
+      title: const Text('Logout'),
+      subtitle: Text((_currentUser == null) ? 'Not signed in' : 'Signed in as: $_currentUser'),
+      onTap: () async {
+        final SharedPreferences prefs = await getStorageInstance();
+        setState(() => spotifyService.clearTokens(prefs));
+        Navigator.pushNamed(context, '/auth');
+      },
     );
   }
 
@@ -126,50 +128,29 @@ class SettingsState extends State<Settings> {
               _setThemeColor(result);
             });
           },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            const PopupMenuItem<String>(
-              value: 'blue',
-                child: Text('Blue')
-            ),
-            const PopupMenuItem<String>(
-                value: 'green',
-                child: Text('Green')
-            ),
-            const PopupMenuItem<String>(
-                value: 'red',
-                child: Text('Red')
-            ),
-            const PopupMenuItem<String>(
-                value: 'yellow',
-                child: Text('Yellow')
-            ),
-            const PopupMenuItem<String>(
-                value: 'pink',
-                child: Text('Pink')
-            ),
-            const PopupMenuItem<String>(
-                value: 'purple',
-                child: Text('Purple')
-            ),
-            const PopupMenuItem<String>(
-                value: 'cyan',
-                child: Text('Cyan')
-            ),
-          ],
-        ),
+          itemBuilder: (BuildContext context) =>
+            <String>['Blue', 'Green', 'Red', 'Yellow', 'Pink', 'Purple', 'Cyan']
+              .map((String x) =>
+                PopupMenuItem<String>(
+                    value: x.toLowerCase(),
+                    child: Text(x)
+                )
+              )
+              .toList()
+          ),
       );
   }
 
   // Loads the initial dark theme bool from SharedPreferences, if none are found
   // loads as false
   Future<void> _loadDarkTheme() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() => _isDark = themeService.darkThemeEnabled(prefs));
   }
 
   // Saves the dark theme bool value to SharedPreferences
   Future<void> _toggleDarkTheme(bool value) async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() {
       themeService.toggleDarkTheme(value, prefs);
       _isDark = value;
@@ -177,29 +158,29 @@ class SettingsState extends State<Settings> {
   }
 
   Future<void> _loadSharing() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() => _isSharing = settingsService.isSharing(prefs));
   }
 
   Future<void> _setSharing(bool value) async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     settingsService.setSharing(value, prefs);
     setState(() => _isSharing = value);
   }
 
   Future<void> _loadThemeColor() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() => _themeColorString = themeService.getColor(prefs));
   }
 
   Future<void> _setThemeColor(String value) async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     themeService.setColor(value, prefs);
     setState(() => _themeColorString = value);
   }
 
   Future<void> _loadCurrentUser() async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() => _currentUser = spotifyService.getCurrentUser(prefs));
   }
 }
