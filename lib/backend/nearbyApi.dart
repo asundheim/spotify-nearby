@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'nearbyService.dart' as nearbyService;
 
 class Nearby extends StatefulWidget {
   @override
@@ -23,10 +24,10 @@ class NearbyState extends State<Nearby> {
               RaisedButton(onPressed: _startNearby, child: Text('Start'),),
               RaisedButton(onPressed: _onPressed, child: Text('Refresh'),),
               RaisedButton(onPressed: _payload, child: Text('Send Payload'),),
-              Text(_result),
-              Text('ID: $_id'),
-              Text('Connections: $_connections'),
-              Text('Payload: $_otherID')
+              Text(_status),
+              Text('ID: ' + nearbyService.uniqueID),
+              Text('Connected IDs: implement later'),
+              Text('Payload: ' + nearbyService.test)
             ],
           ),
         ),
@@ -36,26 +37,20 @@ class NearbyState extends State<Nearby> {
 
 
   // Get battery level.
-  String _result = 'blank';
-  String _id = 'blank';
-  String _connections = 'blank';
-  String _otherID = 'blank';
+  String _status = 'Null';
+  String _connectedIDs = 'Null';
+  String _otherID = 'Null';
 
   void _onPressed() {
-  _getConnections();
-  _myID();
-  _payloadResults();
+    setState(() {
+      nearbyService.getConnectionsID();
+      nearbyService.receivedData();
+    });
 }
 
   Future<void> _startNearby() async {
-    String out;
-    try {
-      final String result = await platform.invokeMethod('start');
-      out = 'result: $result';
-    } on PlatformException catch (e) {
-      out = "Failed to start nearby: '${e.message}'.";
-    }
-    setState(() => _result = out);
+    nearbyService.startNearbyService();
+    setState(() => _status = "Discovery and Advertising On");
   }
 
   Future<void> _getConnections() async {
@@ -66,18 +61,7 @@ class NearbyState extends State<Nearby> {
     } on PlatformException catch (e) {
       out = "Error gc: '${e.message}'.";
     }
-    setState(() => _connections = out);
-  }
-
-  Future<void> _myID() async {
-    String out;
-    try {
-      final String result = await platform.invokeMethod('id');
-      out = result;
-    } on PlatformException catch (e) {
-      out = "Error id: '${e.message}'.";
-    }
-    setState(() => _id = out);
+    setState(() => _connectedIDs = out);
   }
 
   Future<void> _payload() async {

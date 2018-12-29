@@ -16,49 +16,67 @@ List<String> receivedSpotifyUsername;
 List<String> receivedCurrentSong;
 List<String> receivedTrackID;
 
-void _clearData() async {
+String test = 'null';
+
+void sendUniqueID(String message) {
+  try {
+    platform.invokeMethod('sendUniqueID',{"uniqueID": uniqueID});
+  } on PlatformException catch (e) {
+    print(e.message);
+  }
+}
+
+void clearData() async {
   receivedUniqueID = null;
   receivedSpotifyUsername = null;
   receivedCurrentSong = null;
   receivedTrackID = null;
 }
 
-Future<void> _startNearbyService() async {
-  String outputID;
+void startNearbyService() {
   try {
-    final String result = await platform.invokeMethod('start');
-    outputID = result;
-  } on PlatformException catch (e) {
-    print(e.message);
-    outputID = "error";
-  }
-  receivedUniqueID.add(outputID);
-}
-
-void _sendPayload() {
-  // Todo Must send target ID, and payload
-  try {
-    platform.invokeMethod('payload');
+    platform.invokeMethod('startNearbyService');
   } on PlatformException catch (e) {
     print(e.message);
   }
 }
 
-Future<void> _receivedData() async {
+Future<void> getConnectionsID() async{
+  try {
+    final String result = await platform.invokeMethod('getConnections');
+    if (result != null) {
+      sendPayload(result, createPayload());
+    }
+  } on PlatformException catch (e) {
+    print(e.message);
+  }
+}
+
+void sendPayload(String endpointID, String payload) {
+  try {
+    platform.invokeMethod('payload',{"endpointID": endpointID, "payload": payload},);
+  } on PlatformException catch (e) {
+    print(e.message);
+  }
+}
+
+Future<void> receivedData() async {
   String outputData;
   try {
-    final String result = await platform.invokeMethod('start');
-    outputData = result;
+    final String result = await platform.invokeMethod('receivedPayload');
+    if (result != null) {
+      outputData = result;
+    }
   } on PlatformException catch (e) {
     print(e.message);
-    outputData = "error";
   }
+  // TEMP FOR TESTING
+  test = outputData;
   // TODO add data parsing
 }
 
-String _createPayload() {
-  // TODO create payload
-  return null;
+String createPayload() {
+  return "Testing payload";
 }
 
 
