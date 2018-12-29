@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
+import 'package:spotify_nearby/backend/storageService.dart';
 
 void main() {
   const MethodChannel('plugins.flutter.io/shared_preferences')
@@ -15,9 +17,10 @@ void main() {
     return null;
   });
 
-  setUp(() async => await spotifyService.clearTokens());
+  setUp(() async => spotifyService.clearTokens(await getStorageInstance()));
 
   test('initial auth storage', () async {
+    SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -28,16 +31,17 @@ void main() {
       return Response(json.encode(mapJson), 200);
     });
 
-    expect(await spotifyService.getAuthToken(), null);
-    expect(await spotifyService.getRefreshToken(), null);
+    expect(spotifyService.getAuthToken(prefs), null);
+    expect(spotifyService.getRefreshToken(prefs), null);
 
-    await spotifyService.initialAuth('');
+    await spotifyService.initialAuth('', prefs);
 
-    expect(await spotifyService.getAuthToken(), 'testAccessToken');
-    expect(await spotifyService.getRefreshToken(), 'testRefreshToken');
+    expect(spotifyService.getAuthToken(prefs), 'testAccessToken');
+    expect(spotifyService.getRefreshToken(prefs), 'testRefreshToken');
   });
 
   test('refresh auth storage', () async {
+    SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -47,13 +51,13 @@ void main() {
       return Response(json.encode(mapJson), 200);
     });
 
-    expect(await spotifyService.getAuthToken(), null);
-    expect(await spotifyService.getRefreshToken(), null);
+    expect(spotifyService.getAuthToken(prefs), null);
+    expect(spotifyService.getRefreshToken(prefs), null);
 
-    await spotifyService.refreshAuth('');
+    await spotifyService.refreshAuth('', prefs);
 
-    expect(await spotifyService.getAuthToken(), 'testAccessToken1');
-    expect(await spotifyService.getRefreshToken(), null);
+    expect(spotifyService.getAuthToken(prefs), 'testAccessToken1');
+    expect(spotifyService.getRefreshToken(prefs), null);
 
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -64,13 +68,14 @@ void main() {
       return Response(json.encode(mapJson), 200);
     });
 
-    await spotifyService.refreshAuth('');
+    await spotifyService.refreshAuth('', prefs);
 
-    expect(await spotifyService.getAuthToken(), 'testAccessToken2');
-    expect(await spotifyService.getRefreshToken(), 'testRefreshToken2');
+    expect(spotifyService.getAuthToken(prefs), 'testAccessToken2');
+    expect(spotifyService.getRefreshToken(prefs), 'testRefreshToken2');
   });
 
   test('detect expired token', () async {
+    SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic>{
@@ -81,12 +86,12 @@ void main() {
       return Response(json.encode(mapJson), 200);
     });
 
-    await spotifyService.initialAuth('');
+    await spotifyService.initialAuth('', prefs);
 
-    expect(await spotifyService.authTokenExpired(), false);
+    expect(spotifyService.authTokenExpired(prefs), false);
 
     await Future<dynamic>.delayed(Duration(milliseconds: 2000));
 
-    expect(await spotifyService.authTokenExpired(), true);
+    expect(spotifyService.authTokenExpired(prefs), true);
   });
 }

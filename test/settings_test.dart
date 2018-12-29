@@ -5,7 +5,7 @@ import 'package:spotify_nearby/pages/settings.dart';
 void main() {
   testWidgets('theme list should populate correctly', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(
-      home: Settings()
+      home: Settings(),
     ));
     await tester.tap(find.byIcon(Icons.color_lens));
     await tester.pumpAndSettle();

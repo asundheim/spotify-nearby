@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spotify_nearby/backend/storageService.dart';
 import 'package:spotify_nearby/backend/settingsService.dart' as settingsService;
 
 void main() {
@@ -11,15 +13,16 @@ void main() {
     return null;
   });
 
-  setUp(() async => await settingsService.clearPrefs());
+  setUp(() async => settingsService.clearPrefs(await getStorageInstance()));
 
   test('toggling should update prefs', () async {
-    await settingsService.setSharing(false);
+    SharedPreferences prefs = await getStorageInstance();
+    settingsService.setSharing(false, prefs);
 
-    expect(await settingsService.isSharing(), false);
+    expect(settingsService.isSharing(prefs), false);
 
-    await settingsService.setSharing(true);
+    settingsService.setSharing(true, prefs);
 
-    expect(await settingsService.isSharing(), true);
+    expect(settingsService.isSharing(prefs), true);
   });
 }

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'spotifyService.dart' as spotifyService;
+import 'storageService.dart';
 
 String loginURL = 'https://accounts.spotify.com/authorize'
     '?client_id=a08c7a5c79304ac1bb28fed5b687f0c1'
@@ -53,14 +55,15 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     // First time flow only
-    _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) {
+    _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) async {
       if (mounted) {
-        setState(() {
-          if (url.split('?')[0] == 'http://localhost:4200/spotify') {
+        if (url.split('?')[0] == 'http://localhost:4200/spotify') {
+          setState(() {
             flutterWebviewPlugin.close();
-            spotifyService.initialAuth(url.split('=')[1]).then((Response response) => print('Initial Auth Complete'));
-          }
-        });
+          });
+          spotifyService.initialAuth(url.split('=')[1], await getStorageInstance()).then((
+              Response response) => print('Initial Auth Complete'));
+        }
       }
     });
   }
@@ -77,17 +80,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> handleLogin() async {
+    SharedPreferences prefs = await getStorageInstance();
     // Check for first time
-    if (await spotifyService.tokenExists()) {
+    if (spotifyService.tokenExists(prefs)) {
       // If token has expired, update it
-      if (await spotifyService.authTokenExpired()) {
-        spotifyService.refreshAuth(await spotifyService.getRefreshToken()).then((Response result) => handleLogin());
+      if (spotifyService.authTokenExpired(prefs)) {
+        spotifyService.refreshAuth(spotifyService.getRefreshToken(prefs), prefs).then((Response result) => handleLogin());
       } else {
         // Test Spotify calls here
-        _setNowPlaying(await spotifyService.getNowPlaying(await spotifyService.getAuthToken()));
+        _setNowPlaying(await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs)));
       }
       // Used to test first use flow
-     spotifyService.clearTokens();
+     spotifyService.clearTokens(prefs);
     } else {
       // Show the login page for first time account
       flutterWebviewPlugin.launch(loginURL);
@@ -109,6 +113,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   handleLogin();
                 },
                 child: const Text('Login'),
+              ),
+              RaisedButton(
+                onPressed: () async {
+                  spotifyService.clearTokens(await getStorageInstance());
+                },
+                child: const Text('Clear Tokens'),
               ),
               Text('Now Playing: ' + nowPlaying),
             ]),

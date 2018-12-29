@@ -15,7 +15,6 @@ class _AuthState extends State<Auth> {
         onTap: () {
           // Todo add auth page link
           setState(() {
-            MyAppState.token = 'value';
             Navigator.pop(context);
           }
           );

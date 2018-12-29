@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../backend/apiTesting.dart';
+import '../backend/storageService.dart';
 import '../backend/settingsService.dart' as settingsService;
 import '../backend/spotifyService.dart' as spotifyService;
 import '../backend/themeService.dart' as themeService;
 import 'package:spotify_nearby/backend/nearbyApi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Settings extends StatefulWidget {
@@ -161,40 +163,43 @@ class SettingsState extends State<Settings> {
   // Loads the initial dark theme bool from SharedPreferences, if none are found
   // loads as false
   Future<void> _loadDarkTheme() async {
-    final bool dark = await themeService.darkThemeEnabled();
-    setState(() => _isDark = dark);
+    SharedPreferences prefs = await getStorageInstance();
+    setState(() => _isDark = themeService.darkThemeEnabled(prefs));
   }
 
   // Saves the dark theme bool value to SharedPreferences
   Future<void> _toggleDarkTheme(bool value) async {
+    SharedPreferences prefs = await getStorageInstance();
     setState(() {
-      themeService.toggleDarkTheme(value);
+      themeService.toggleDarkTheme(value, prefs);
       _isDark = value;
     });
   }
 
   Future<void> _loadSharing() async {
-    final bool sharing = await settingsService.isSharing();
-    setState(() => _isSharing = sharing);
+    SharedPreferences prefs = await getStorageInstance();
+    setState(() => _isSharing = settingsService.isSharing(prefs));
   }
 
   Future<void> _setSharing(bool value) async {
-    await settingsService.setSharing(value);
+    SharedPreferences prefs = await getStorageInstance();
+    settingsService.setSharing(value, prefs);
     setState(() => _isSharing = value);
   }
 
   Future<void> _loadThemeColor() async {
-    final String color = await themeService.getColor();
-    setState(() => _themeColorString = color);
+    SharedPreferences prefs = await getStorageInstance();
+    setState(() => _themeColorString = themeService.getColor(prefs));
   }
 
   Future<void> _setThemeColor(String value) async {
-    await themeService.setColor(value);
+    SharedPreferences prefs = await getStorageInstance();
+    themeService.setColor(value, prefs);
     setState(() => _themeColorString = value);
   }
 
   Future<void> _loadCurrentUser() async {
-    final String user = await spotifyService.getCurrentUser();
-    setState(() => _currentUser = user);
+    SharedPreferences prefs = await getStorageInstance();
+    setState(() => _currentUser = spotifyService.getCurrentUser(prefs));
   }
 }
