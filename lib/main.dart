@@ -1,7 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:spotify_nearby/backend/themeService.dart' as themeService;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'backend/themeService.dart' as themeService;
+import 'backend/spotifyService.dart' as spotifyService;
+import 'backend/storageService.dart';
 
 import 'pages/auth.dart';
 import 'pages/home.dart';
@@ -30,58 +34,72 @@ class MyAppState extends State<MyApp> {
   // Variables used to manage a dark theme
   String _color = 'blue';
   bool _isDark = false;
-
-  // TODO add to the token from the auth page so it reroutes, also shared pref if not already
-  static String token;
+  @override
+  void initState() {
+    _loadColor();
+    _loadDarkMode();
+    _getAuth();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    // loads theme data and color data
-    _loadColor();
-    _loadDarkMode();
-
-    final Map<String, MaterialColor> colorMap = <String, MaterialColor> {
-      'blue': Colors.blue,
-      'red': Colors.red,
-      'green': Colors.green,
-      'yellow': Colors.yellow,
-      'pink': Colors.pink,
-      'purple': Colors.purple,
-      'cyan': Colors.cyan
-    };
-
+    return MaterialApp(
+        title: 'Spotify Nearby',
+        theme: ThemeData(
+          primarySwatch: themeService.mapColor(_color),
+          brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
+        ),
+        initialRoute: '/',
+        // ignore: always_specify_types
+        routes: {
+          '/': (BuildContext context) => FutureBuilder<SharedPreferences>(
+            future: getStorageInstance(),
+            builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+              if (snapshot.hasData) {
+                if (spotifyService.tokenExists(snapshot.data)) {
+                  return Home();
+                } else {
+                  return Auth();
+                }
+                } else {
+                  // Splash screen goes here
+                  return const Text('loading');
+                }
+              }
+            ),
+          '/home': (BuildContext context) => Home(),
+          '/auth': (BuildContext context) => Auth(),
+        }
+    );
     // Main Material app return calling home class
     // Main theme for the entire application, Do not override primary color
     // of children otherwise primary app color picker won't function on it
-    return MaterialApp(
-      title: 'Spotify Nearby',
-      theme: ThemeData(
-        primarySwatch: colorMap[_color],
-        brightness: _isDark ? Brightness.dark : Brightness.light, //Controls dark theme
-      ),
-     initialRoute: (token == null) ? '/auth' : '/',
-      // ignore: always_specify_types
-      routes: {
-        '/': (BuildContext context) => Home(),
-        '/auth': (BuildContext context) => Auth(),
-      }
-    );
   }
 
   // Accesses theme data stored in shared preferences "darkMode"
   Future<void> _loadDarkMode() async {
-    final bool dark = await themeService.darkThemeEnabled();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() {
-      _isDark = dark;
+      _isDark = themeService.darkThemeEnabled(prefs);
     });
   }
 
   Future<void> _loadColor() async {
-    final String currentColor = await themeService.getColor();
+    final SharedPreferences prefs = await getStorageInstance();
     setState(() {
-      _color = currentColor;
+      _color = themeService.getColor(prefs);
     });
+  }
+
+  Future<String> _getAuth() async {
+    final SharedPreferences prefs = await getStorageInstance();
+    if (spotifyService.tokenExists(prefs)) {
+      if (spotifyService.authTokenExpired(prefs)) {
+        spotifyService.refreshAuth(spotifyService.getRefreshToken(prefs), prefs);
+      }
+    }
+    return spotifyService.getAuthToken(prefs);
   }
 }
 

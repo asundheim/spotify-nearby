@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:spotify_nearby/backend/spotifyService.dart' as spotifyService;
-import 'package:spotify_nearby/pages/auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../backend/spotifyService.dart' as spotifyService;
+import '../backend/storageService.dart';
 import 'settings.dart';
 
 class Home extends StatefulWidget {
@@ -113,19 +114,19 @@ class HomeState extends State<Home> {
 
   // ignore: unused_element
   Future<void> _loadAuth() async {
-    if (!(await spotifyService.tokenExists())) {
+    if (!spotifyService.tokenExists(await getStorageInstance())) {
       Navigator.pushNamed(context, '/auth');
     }
   }
 
   Future<void> loadCurrentUser() async {
-    final String user = await spotifyService.getCurrentUser();
-    setState(() => currentUser = user);
+    final SharedPreferences prefs = await getStorageInstance();
+    setState(() => currentUser = spotifyService.getCurrentUser(prefs));
   }
 
   // TODO: this will need to be updated periodically
   Future<void> loadCurrentlyPlaying() async {
-    final String playing = await spotifyService.getNowPlaying(await spotifyService.getAuthToken());
+    final String playing = (await spotifyService.getNowPlaying(spotifyService.getAuthToken(await getStorageInstance())))['name'];
     setState(() => currentlyPlaying = playing);
   }
 }

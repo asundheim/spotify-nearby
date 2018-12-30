@@ -11,7 +11,7 @@ class Nearby extends StatefulWidget {
 
 class NearbyState extends State<Nearby> {
 
-  static const platform = const MethodChannel('com.anderssundheim.spotifynearby/nearby');
+  static const MethodChannel platform = MethodChannel('com.anderssundheim.spotifynearby/nearby');
 
   @override
   Widget build(BuildContext context) {
