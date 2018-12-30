@@ -21,12 +21,12 @@ class NearbyState extends State<Nearby> {
         child: Center(
           child: Column(
             children: <Widget>[
-              RaisedButton(onPressed: _startNearby, child: Text('Start'),),
-              RaisedButton(onPressed: _onPressed, child: Text('Refresh'),),
-              RaisedButton(onPressed: _payload, child: Text('Send Payload'),),
+              RaisedButton(onPressed: _startNearby, child: const Text('Start'),),
+              RaisedButton(onPressed: _onPressed, child: const Text('Refresh'),),
+              RaisedButton(onPressed: _payload, child: const Text('Send Payload'),),
               Text(_status),
               Text('ID: ' + nearbyService.uniqueID),
-              Text('Connected IDs: implement later'),
+              const Text('Connected IDs: implement later'),
               Text('Payload: ' + nearbyService.test)
             ],
           ),
@@ -86,4 +86,3 @@ class NearbyState extends State<Nearby> {
     setState(() => _otherID = out);
   }
 }
-

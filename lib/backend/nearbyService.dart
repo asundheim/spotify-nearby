@@ -2,10 +2,10 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-var uuid = new Uuid();
+Uuid uuid = Uuid();
 
 final String uniqueID = uuid.v4();
-final platform = MethodChannel('com.anderssundheim.spotifynearby/nearby');
+const MethodChannel platform = MethodChannel('com.anderssundheim.spotifynearby/nearby');
 
 String spotifyUsername;
 String currentSong;
@@ -26,7 +26,7 @@ void sendUniqueID(String message) {
   }
 }
 
-void clearData() async {
+void clearData() {
   receivedUniqueID = null;
   receivedSpotifyUsername = null;
   receivedCurrentSong = null;
@@ -54,7 +54,7 @@ Future<void> getConnectionsID() async{
 
 void sendPayload(String endpointID, String payload) {
   try {
-    platform.invokeMethod('payload',{"endpointID": endpointID, "payload": payload},);
+    platform.invokeMethod('payload',<String, String> {'endpointID': endpointID, 'payload': payload},);
   } on PlatformException catch (e) {
     print(e.message);
   }
@@ -76,9 +76,5 @@ Future<void> receivedData() async {
 }
 
 String createPayload() {
-  return "Testing payload";
+  return 'Testing payload';
 }
-
-
-
-
