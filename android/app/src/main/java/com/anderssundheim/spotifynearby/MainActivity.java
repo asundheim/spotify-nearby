@@ -174,7 +174,7 @@ public class MainActivity extends FlutterActivity {
                           result.success("success");
                       }
                       if (call.method.equals("getConnections")) {
-                          result.success(receivedEndpointID.get(0));
+                          result.success(receivedEndpointID);
                       }
                       if (call.method.equals("payload")) {
                           String endpointID = call.argument("endpointID");

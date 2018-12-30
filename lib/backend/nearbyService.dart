@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'spotifyService.dart';
 import 'package:uuid/uuid.dart';
 
 var uuid = new Uuid();
@@ -7,11 +8,12 @@ var uuid = new Uuid();
 final String uniqueID = uuid.v4();
 final platform = MethodChannel('com.anderssundheim.spotifynearby/nearby');
 
+// TODO need values to be spotify data, Thanks ders love you bby <3
 String spotifyUsername;
 String currentSong;
 String trackID;
 
-List<String> receivedUniqueID;
+List<dynamic> receivedUniqueID = new List();
 List<String> receivedSpotifyUsername;
 List<String> receivedCurrentSong;
 List<String> receivedTrackID;
@@ -43,9 +45,16 @@ void startNearbyService() {
 
 Future<void> getConnectionsID() async{
   try {
-    final String result = await platform.invokeMethod('getConnections');
+    final List<dynamic> result = await platform.invokeMethod('getConnections');
+
     if (result != null) {
-      sendPayload(result, createPayload());
+    receivedUniqueID.replaceRange(0, receivedUniqueID.length, result);
+    int index = 0;
+    for (int i = index; i < receivedUniqueID.length; i++){
+      sendPayload(receivedUniqueID[i], createPayload());
+      index++;
+    }
+    //
     }
   } on PlatformException catch (e) {
     print(e.message);
