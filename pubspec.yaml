@@ -10,6 +10,7 @@ dependencies:
   http: ^0.12.0
   url_launcher: ^4.0.3
   mockito: ^4.0.0
+  uuid: ^1.0.3
 
 flutter_icons:
   android: "launcher_icon"
