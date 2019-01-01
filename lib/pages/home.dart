@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../backend/spotifyService.dart' as spotifyService;
 import '../backend/storageService.dart';
 import 'settings.dart';
+import 'package:spotify_nearby/backend/storageService.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -14,6 +15,12 @@ class HomeState extends State<Home> {
   // TODO also need values here, thanks!
   String currentUser = 'shouldn\' be seeing this';
   String currentlyPlaying = '';
+
+  Future<String> getNowPlaying() async {
+    final SharedPreferences prefs = await getStorageInstance();
+    Map<String, dynamic> map = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs));
+    return map['id'];
+  }
 
   // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
   static List<String> userAccount = <String>['DarthEvandar','Budde25', 'peanut'];

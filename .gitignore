@@ -10,3 +10,4 @@ ios/.generated/
 packages
 .flutter-plugins
 analysis_options.yaml
+android/.gradle/
