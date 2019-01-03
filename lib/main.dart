@@ -44,6 +44,8 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    _loadColor();
+    _loadDarkMode();
     return MaterialApp(
         title: 'Spotify Nearby',
         theme: ThemeData(

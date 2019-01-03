@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   // TODO also need values here, thanks!
-  String currentUser = 'shouldn\' be seeing this';
+  String currentUser = 'shouldn\'t be seeing this';
   String currentlyPlaying = '';
 
   Future<String> getNowPlaying() async {
@@ -31,7 +31,7 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     loadCurrentUser();
-    loadCurrentlyPlaying();
+    //loadCurrentlyPlaying();
     super.initState();
   }
 
@@ -39,6 +39,7 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     _listLengthMin();
+    //loadCurrentlyPlaying();
 
     return Scaffold(
       appBar: AppBar(
@@ -133,7 +134,8 @@ class HomeState extends State<Home> {
 
   // TODO: this will need to be updated periodically
   Future<void> loadCurrentlyPlaying() async {
-    final String playing = (await spotifyService.getNowPlaying(spotifyService.getAuthToken(await getStorageInstance())))['name'];
+    final SharedPreferences prefs = await getStorageInstance();
+    final String playing = (await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs)))['name'];
     setState(() => currentlyPlaying = playing);
   }
 }
