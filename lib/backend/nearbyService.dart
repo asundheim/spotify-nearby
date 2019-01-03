@@ -13,7 +13,7 @@ String spotifyUsername;
 String currentSong;
 String trackID;
 
-List<dynamic> receivedUniqueID = new List();
+List<dynamic> receivedUniqueID = <dynamic>[];
 List<String> receivedSpotifyUsername;
 List<String> receivedCurrentSong;
 List<String> receivedTrackID;
@@ -22,7 +22,7 @@ String test = 'null';
 
 void sendUniqueID(String message) {
   try {
-    platform.invokeMethod('sendUniqueID',{"uniqueID": uniqueID});
+    platform.invokeMethod('sendUniqueID',{'uniqueID': uniqueID});
   } on PlatformException catch (e) {
     print(e.message);
   }
@@ -85,5 +85,5 @@ Future<void> receivedData() async {
 }
 
 String createPayload() {
-  return "payload test";
+  return 'payload test';
 }

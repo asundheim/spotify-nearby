@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../backend/spotifyService.dart' as spotifyService;
 import '../backend/storageService.dart';
 import 'settings.dart';
-import 'package:spotify_nearby/backend/storageService.dart';
 
 class Home extends StatefulWidget {
   @override

@@ -21,8 +21,8 @@ class NearbyState extends State<Nearby> {
         child: Center(
           child: Column(
             children: <Widget>[
-              RaisedButton(onPressed: _startNearby, child: Text('Start'),),
-              RaisedButton(onPressed: _onPressed, child: Text('Refresh'),),
+              RaisedButton(onPressed: _startNearby, child: const Text('Start'),),
+              RaisedButton(onPressed: _onPressed, child: const Text('Refresh'),),
               Text(_status),
               Text('ID: ' + nearbyService.uniqueID),
               Text('Connected IDs: ' + nearbyService.receivedUniqueID.toString()),
@@ -47,6 +47,6 @@ class NearbyState extends State<Nearby> {
 
   Future<void> _startNearby() async {
     nearbyService.startNearbyService();
-    setState(() => _status = "Discovery and Advertising On");
+    setState(() => _status = 'Discovery and Advertising On');
   }
 }
