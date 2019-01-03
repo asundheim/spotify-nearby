@@ -133,7 +133,8 @@ class HomeState extends State<Home> {
 
   // TODO: this will need to be updated periodically
   Future<void> loadCurrentlyPlaying() async {
-    final String playing = (await spotifyService.getNowPlaying(spotifyService.getAuthToken(await getStorageInstance())))['name'];
+    final String playing = await spotifyService.getNowPlaying(spotifyService.getAuthToken(await getStorageInstance()))
+        .then((Map<String, dynamic> map) => map['name']);
     setState(() => currentlyPlaying = playing);
   }
 }
