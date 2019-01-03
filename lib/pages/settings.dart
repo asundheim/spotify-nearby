@@ -151,6 +151,7 @@ class SettingsState extends State<Settings> {
   // Saves the dark theme bool value to SharedPreferences
   Future<void> _toggleDarkTheme(bool value) async {
     final SharedPreferences prefs = await getStorageInstance();
+
     setState(() {
       themeService.toggleDarkTheme(value, prefs);
       _isDark = value;
