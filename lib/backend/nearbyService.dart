@@ -85,9 +85,5 @@ Future<void> receivedData() async {
 }
 
 String createPayload() {
-<<<<<<< HEAD
   return "payload test";
-=======
-  return 'Testing payload';
->>>>>>> master
 }
