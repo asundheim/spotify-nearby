@@ -94,4 +94,20 @@ void main() {
 
     expect(spotifyService.authTokenExpired(prefs), true);
   });
+
+  test('get currently playing should return a message on no song playing', () async {
+    spotifyService.client = MockClient((Request request) async {
+      return Response('', 200);
+    });
+    expect((await spotifyService.getNowPlaying(''))['name'], 'No song playing');
+  });
+
+  test('get currently playing should song playing', () async {
+
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> map = <String, dynamic>{'item': <String, dynamic>{'name': 'mo bomba'}};
+      return Response(json.encode(map), 200);
+    });
+    expect((await spotifyService.getNowPlaying(''))['name'], 'mo bomba');
+  });
 }
