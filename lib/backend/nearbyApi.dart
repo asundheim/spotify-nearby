@@ -23,10 +23,9 @@ class NearbyState extends State<Nearby> {
             children: <Widget>[
               RaisedButton(onPressed: _startNearby, child: const Text('Start'),),
               RaisedButton(onPressed: _onPressed, child: const Text('Refresh'),),
-              RaisedButton(onPressed: _payload, child: const Text('Send Payload'),),
               Text(_status),
               Text('ID: ' + nearbyService.uniqueID),
-              const Text('Connected IDs: implement later'),
+              Text('Connected IDs: ' + nearbyService.receivedUniqueID.toString()),
               Text('Payload: ' + nearbyService.test)
             ],
           ),
@@ -36,10 +35,8 @@ class NearbyState extends State<Nearby> {
   }
 
 
-  // Get battery level.
+  // Show status
   String _status = 'Null';
-  String _connectedIDs = 'Null';
-  String _otherID = 'Null';
 
   void _onPressed() {
     setState(() {
@@ -50,39 +47,6 @@ class NearbyState extends State<Nearby> {
 
   Future<void> _startNearby() async {
     nearbyService.startNearbyService();
-    setState(() => _status = "Discovery and Advertising On");
-  }
-
-  Future<void> _getConnections() async {
-    String out;
-    try {
-      final String result = await platform.invokeMethod('connections');
-      out = result;
-    } on PlatformException catch (e) {
-      out = "Error gc: '${e.message}'.";
-    }
-    setState(() => _connectedIDs = out);
-  }
-
-  Future<void> _payload() async {
-    String out;
-    try {
-      final String result = await platform.invokeMethod('payload');
-      out = result;
-    } on PlatformException catch (e) {
-      out = "Error id: '${e.message}'.";
-    }
-    //setState(() => _id = out);
-  }
-
-  Future<void> _payloadResults() async {
-    String out;
-    try {
-      final String result = await platform.invokeMethod('payloadResults');
-      out = result;
-    } on PlatformException catch (e) {
-      out = "Error id: '${e.message}'.";
-    }
-    setState(() => _otherID = out);
+    setState(() => _status = 'Discovery and Advertising On');
   }
 }

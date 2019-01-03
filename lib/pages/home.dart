@@ -11,8 +11,16 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  String currentUser = '';
+  // TODO also need values here, thanks!
+  String currentUser = 'shouldn\' be seeing this';
   String currentlyPlaying = '';
+
+  Future<String> getNowPlaying() async {
+    final SharedPreferences prefs = await getStorageInstance();
+    Map<String, dynamic> map = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs));
+    return map['id'];
+  }
+
   // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
   static List<String> userAccount = <String>['DarthEvandar','Budde25', 'peanut'];
   static List<String> songTitle = <String>['My Favorite Song', 'Fireflies'];
@@ -59,7 +67,6 @@ class HomeState extends State<Home> {
                 value: null,
               ),
               InkWell(
-                // TODO ontap launches your spotify
                 onTap: () => setState(() => _launchSpotify('')),
               child: ListTile(
                 title: Text('Signed in as: $currentUser', textAlign: TextAlign.center),
