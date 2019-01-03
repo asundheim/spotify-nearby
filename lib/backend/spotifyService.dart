@@ -33,14 +33,14 @@ Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
 Future<Map<String, dynamic>> getNowPlaying(String authToken) async {
   Map<String, dynamic> map;
   await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
-      .then<Response>((Response response) => map = json.decode(response.body)['item']);
+      .then<Map<String, dynamic>>((Response response) => map = json.decode(response.body)['item']);
   return map;
 }
 
 Future<Map<String, dynamic>> getUserData(String authToken) async {
   Map<String, dynamic> map;
   client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
-      .then<Response>((Response response) => map = json.decode(response.body));
+      .then<Map<String, dynamic>>((Response response) => map = json.decode(response.body));
   return map;
 }
 
