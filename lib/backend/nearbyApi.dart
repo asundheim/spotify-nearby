@@ -21,11 +21,20 @@ class NearbyState extends State<Nearby> {
         child: Center(
           child: Column(
             children: <Widget>[
+<<<<<<< HEAD
               RaisedButton(onPressed: _startNearby, child: Text('Start'),),
               RaisedButton(onPressed: _onPressed, child: Text('Refresh'),),
               Text(_status),
               Text('ID: ' + nearbyService.uniqueID),
               Text('Connected IDs: ' + nearbyService.receivedUniqueID.toString()),
+=======
+              RaisedButton(onPressed: _startNearby, child: const Text('Start'),),
+              RaisedButton(onPressed: _onPressed, child: const Text('Refresh'),),
+              RaisedButton(onPressed: _payload, child: const Text('Send Payload'),),
+              Text(_status),
+              Text('ID: ' + nearbyService.uniqueID),
+              const Text('Connected IDs: implement later'),
+>>>>>>> master
               Text('Payload: ' + nearbyService.test)
             ],
           ),
@@ -50,4 +59,3 @@ class NearbyState extends State<Nearby> {
     setState(() => _status = "Discovery and Advertising On");
   }
 }
-
