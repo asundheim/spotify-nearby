@@ -31,7 +31,7 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     loadCurrentUser();
-    loadCurrentlyPlaying();
+    // loadCurrentlyPlaying();
     super.initState();
   }
 
@@ -39,7 +39,7 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     _listLengthMin();
-    loadCurrentlyPlaying();
+    // loadCurrentlyPlaying();
 
     return Scaffold(
       appBar: AppBar(
