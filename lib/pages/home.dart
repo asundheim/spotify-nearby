@@ -31,7 +31,7 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     loadCurrentUser();
-    //loadCurrentlyPlaying();
+    loadCurrentlyPlaying();
     super.initState();
   }
 
@@ -39,7 +39,7 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     _listLengthMin();
-    //loadCurrentlyPlaying();
+    loadCurrentlyPlaying();
 
     return Scaffold(
       appBar: AppBar(
@@ -134,8 +134,8 @@ class HomeState extends State<Home> {
 
   // TODO: this will need to be updated periodically
   Future<void> loadCurrentlyPlaying() async {
-    final SharedPreferences prefs = await getStorageInstance();
-    final String playing = (await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs)))['name'];
+    final String playing = await spotifyService.getNowPlaying(spotifyService.getAuthToken(await getStorageInstance()))
+        .then((Map<String, dynamic> map) => map['name']);
     setState(() => currentlyPlaying = playing);
   }
 }
