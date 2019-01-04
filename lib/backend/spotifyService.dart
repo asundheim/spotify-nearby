@@ -34,10 +34,10 @@ Future<Map<String, dynamic>> getNowPlaying(String authToken) async {
   Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
   await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
-    if (response.body != '') {
-      map = json.decode(response.body)['item'];
-    }
-  });
+        if (response.body != '') {
+          map = json.decode(response.body)['item'];
+        }
+      });
   return map;
 }
 
@@ -45,10 +45,10 @@ Future<Map<String, dynamic>> getUserData(String authToken) async {
   Map<String, dynamic> map = <String, dynamic>{'display_name': 'Unable to retrieve username'};
   await client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
-    if (response.body != '') {
-      map = json.decode(response.body);
-    }
-  });
+        if (response.body != '') {
+          map = json.decode(response.body);
+        }
+      });
   return map;
 }
 
