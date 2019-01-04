@@ -11,3 +11,5 @@ packages
 .flutter-plugins
 analysis_options.yaml
 android/.gradle/
+android/.gradle/buildOutputCleanup/cache.properties
+android/local.properties

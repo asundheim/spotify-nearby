@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'spotifyService.dart';
+import 'storageService.dart';
+import 'spotifyService.dart' as spotifyService;
 import 'package:uuid/uuid.dart';
 
 Uuid uuid = Uuid();
@@ -8,10 +9,9 @@ Uuid uuid = Uuid();
 final String uniqueID = uuid.v4();
 const MethodChannel platform = MethodChannel('com.anderssundheim.spotifynearby/nearby');
 
-// TODO need values to be spotify data, Thanks ders love you bby <3
 String spotifyUsername;
-String currentSong;
-String trackID;
+String currentSong = 'none';
+String trackID = 'none';
 
 List<dynamic> receivedUniqueID = <dynamic>[];
 List<String> receivedSpotifyUsername;
@@ -43,7 +43,7 @@ void startNearbyService() {
   }
 }
 
-Future<void> getConnectionsID() async{
+Future<void> getConnectionsID() async {
   try {
     final List<dynamic> result = await platform.invokeMethod('getConnections');
 
@@ -51,7 +51,7 @@ Future<void> getConnectionsID() async{
     receivedUniqueID.replaceRange(0, receivedUniqueID.length, result);
     int index = 0;
     for (int i = index; i < receivedUniqueID.length; i++){
-      sendPayload(receivedUniqueID[i], createPayload());
+      sendPayload(receivedUniqueID[i], await createPayload());
       index++;
     }
     //
@@ -84,6 +84,21 @@ Future<void> receivedData() async {
   // TODO add data parsing
 }
 
-String createPayload() {
-  return 'payload test';
+Future<String> createPayload() async {
+  await loadData();
+  return '$spotifyUsername|$currentSong|$trackID';
 }
+
+  // TODO: this will need to be updated periodically
+  Future<void> loadData() async {
+    final SharedPreferences prefs = await getStorageInstance();
+    final String playing = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs))
+        .then((Map<String, dynamic> map) => map['name']);
+    final String track = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs))
+        .then((Map<String, dynamic> map) => map['id']);
+    spotifyUsername = spotifyService.getCurrentUser(prefs);
+    currentSong = playing;
+    trackID = track;
+  }
+
+

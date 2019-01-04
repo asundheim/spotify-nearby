@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   // TODO also need values here, thanks!
-  String currentUser = 'shouldn\' be seeing this';
+  String currentUser = 'shouldn\'t be seeing this';
   String currentlyPlaying = '';
 
   Future<String> getNowPlaying() async {
@@ -39,6 +39,7 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     _listLengthMin();
+    loadCurrentlyPlaying();
 
     return Scaffold(
       appBar: AppBar(
