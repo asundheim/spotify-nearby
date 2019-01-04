@@ -82,7 +82,6 @@ class MyAppState extends State<MyApp> {
   // Accesses theme data stored in shared preferences "darkMode"
   Future<void> _loadDarkMode() async {
     final SharedPreferences prefs = await getStorageInstance();
-    print('reloaded');
     setState(() {
       _isDark = themeService.darkThemeEnabled(prefs);
     });
