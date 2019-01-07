@@ -112,4 +112,5 @@ class MyAppState extends State<MyApp> {
 
 Future<void> refresh()  async {
   spotifyService.updateInfo(spotifyService.getAuthToken(await getStorageInstance()), await getStorageInstance());
+  nearbyService.getConnectionsID();
 }
