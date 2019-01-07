@@ -21,7 +21,10 @@ import 'pages/home.dart';
  */
 
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+  Timer.periodic(Duration(seconds: 5), (Timer t) => refresh());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -105,3 +108,6 @@ class MyAppState extends State<MyApp> {
   }
 }
 
+Future<void> refresh()  async {
+  spotifyService.updateInfo(spotifyService.getAuthToken(await getStorageInstance()), await getStorageInstance());
+}

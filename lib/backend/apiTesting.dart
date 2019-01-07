@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         spotifyService.refreshAuth(spotifyService.getRefreshToken(prefs), prefs).then((Response result) => handleLogin());
       } else {
         // Test Spotify calls here
-        _setNowPlaying((await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs)))['name']);
+        _setNowPlaying((await spotifyService.nowPlaying(spotifyService.getAuthToken(prefs)))['name']);
       }
       // Used to test first use flow
      spotifyService.clearTokens(prefs);

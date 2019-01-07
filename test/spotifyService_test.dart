@@ -99,7 +99,7 @@ void main() {
     spotifyService.client = MockClient((Request request) async {
       return Response('', 200);
     });
-    expect((await spotifyService.getNowPlaying(''))['name'], 'No song playing');
+    expect((await spotifyService.nowPlaying(''))['name'], 'No song playing');
   });
 
   test('get currently playing should song playing', () async {
@@ -108,6 +108,6 @@ void main() {
       final Map<String, dynamic> map = <String, dynamic>{'item': <String, dynamic>{'name': 'mo bomba'}};
       return Response(json.encode(map), 200);
     });
-    expect((await spotifyService.getNowPlaying(''))['name'], 'mo bomba');
+    expect((await spotifyService.nowPlaying(''))['name'], 'mo bomba');
   });
 }

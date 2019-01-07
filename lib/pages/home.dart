@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../backend/spotifyService.dart' as spotifyService;
+import 'package:spotify_nearby/backend/nearbyService.dart' as nearbyService;
 import '../backend/storageService.dart';
 import 'settings.dart';
 
@@ -13,16 +14,10 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   // TODO also need values here, thanks!
   String currentUser = 'shouldn\'t be seeing this';
-  String currentlyPlaying = '';
-
-  Future<String> getNowPlaying() async {
-    final SharedPreferences prefs = await getStorageInstance();
-    Map<String, dynamic> map = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs));
-    return map['id'];
-  }
+  String currentlyPlaying = 'Nothing is Playing';
 
   // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
-  static List<String> userAccount = <String>['DarthEvandar','Budde25', 'peanut'];
+  static List<String> userAccount = <String>['DarthEvandar','Budde25'];
   static List<String> songTitle = <String>['My Favorite Song', 'Fireflies'];
   static List<String> songUrl = <String>['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
   static List<List<String>> titleData = <List<String>>[userAccount,songTitle,songUrl];
@@ -30,8 +25,8 @@ class HomeState extends State<Home> {
 
   @override
   void initState() {
-    loadCurrentUser();
-    // loadCurrentlyPlaying();
+    _loadNowPlaying();
+    _loadCurrentUser();
     super.initState();
   }
 
@@ -39,7 +34,8 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     _listLengthMin();
-    // loadCurrentlyPlaying();
+    _loadNowPlaying();
+    _updateTiles();
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +64,7 @@ class HomeState extends State<Home> {
                 value: null,
               ),
               InkWell(
-                onTap: () => setState(() => _launchSpotify('')),
+                onTap: () =>  _launchSpotify(''),
               child: ListTile(
                 title: Text('Signed in as: $currentUser', textAlign: TextAlign.center),
                 subtitle: Text('Currently Playing: $currentlyPlaying', textAlign: TextAlign.center),
@@ -127,15 +123,28 @@ class HomeState extends State<Home> {
     }
   }
 
-  Future<void> loadCurrentUser() async {
+  Future<void> _loadCurrentUser() async {
     final SharedPreferences prefs = await getStorageInstance();
     setState(() => currentUser = spotifyService.getCurrentUser(prefs));
   }
 
+  void _loadNowPlaying() async {
+    final SharedPreferences prefs = await getStorageInstance();
+    setState(() => currentlyPlaying = spotifyService.getNowPlaying(prefs));
+  }
+
   // TODO: this will need to be updated periodically
   Future<void> loadCurrentlyPlaying() async {
-    final String playing = await spotifyService.getNowPlaying(spotifyService.getAuthToken(await getStorageInstance()))
+    final String playing = await spotifyService.nowPlaying(spotifyService.getAuthToken(await getStorageInstance()))
         .then((Map<String, dynamic> map) => map['name']);
     setState(() => currentlyPlaying = playing);
+  }
+
+  void _updateTiles() {
+    setState(() {
+      userAccount = nearbyService.receivedSpotifyUsername;
+      songTitle = nearbyService.receivedCurrentSong;
+      songUrl = nearbyService.receivedTrackID;
+    });
   }
 }
