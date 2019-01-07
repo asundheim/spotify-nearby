@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'storageService.dart';
 import 'spotifyService.dart' as spotifyService;
+import 'settingsService.dart' as settingsService;
 import 'package:uuid/uuid.dart';
 
 Uuid uuid = Uuid();
@@ -14,11 +15,12 @@ String currentSong = 'none';
 String trackID = 'none';
 
 List<dynamic> receivedUniqueID = <dynamic>[];
-List<String> receivedSpotifyUsername = <String>['DarthEvandar','Budde25'];
-List<String> receivedCurrentSong = <String>['My Favorite Song', 'Fireflies'];
-List<String> receivedTrackID = <String>['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
+List<String> receivedUserAccount = <String>[];
+List<String> receivedSongTitle = <String>[];
+List<String> receivedSongUrl = <String>[];
 
 String test = 'null';
+bool sharing = false;
 
 void sendUniqueID(String message) {
   try {
@@ -30,14 +32,29 @@ void sendUniqueID(String message) {
 
 void clearData() {
   receivedUniqueID = null;
-  receivedSpotifyUsername = null;
-  receivedCurrentSong = null;
-  receivedTrackID = null;
+  receivedUserAccount = null;
+  receivedSongTitle = null;
+  receivedSongUrl = null;
 }
 
-void startNearbyService() {
+Future<void> startNearbyService() async {
+  final SharedPreferences prefs = await getStorageInstance();
+  if (settingsService.isSharing(prefs) && !sharing) {
+    sharing = true;
+    try {
+      platform.invokeMethod('startNearbyService');
+    } on PlatformException catch (e) {
+      print(e.message);
+    }
+  } else {
+    print('Sharing is off');
+    // TODO prompt user to turn sharing on, bc why would you turn it off?
+  }
+}
+
+void stopNearbyService() async {
   try {
-    platform.invokeMethod('startNearbyService');
+    platform.invokeMethod('stopNearbyService');
   } on PlatformException catch (e) {
     print(e.message);
   }
@@ -53,9 +70,7 @@ Future<void> getConnectionsID() async {
     for (int i = index; i < receivedUniqueID.length; i++){
       sendPayload(receivedUniqueID[i], await createPayload());
       index++;
-    }
-    //
-    }
+    }}
   } on PlatformException catch (e) {
     print(e.message);
   }
@@ -79,20 +94,38 @@ Future<void> receivedData() async {
   } on PlatformException catch (e) {
     print(e.message);
   }
-  // TODO check for errors
-  List<String> parsedData = unparsedData.split('|');
-  receivedSpotifyUsername.add(parsedData[0]);
-  receivedCurrentSong.add(parsedData[1]);
-  receivedTrackID.add(parsedData[2]);
+
+  if (unparsedData == 'something went wrong') {
+    print('Something went wrong');
+  } else {
+    List<String> parsedData = unparsedData.split('|');
+    if (receivedUserAccount != null) {
+      for (int i = 0; i < receivedUserAccount.length; i++)
+        if (receivedUserAccount[i] == parsedData[0]) {
+          receivedSongTitle.insert(i, parsedData[1]);
+          receivedSongUrl.insert(i, parsedData[2]);
+        } else {
+          receivedUserAccount.add(parsedData[0]);
+          receivedSongTitle.add(parsedData[1]);
+          receivedSongUrl.add(parsedData[2]);
+        }
+    } else {
+      print('Null List');
+    }
+  }
 }
 
 Future<String> createPayload() async {
   await loadData();
-  //print('$spotifyUsername|$currentSong|$trackID');
-  return '$spotifyUsername|$currentSong|$trackID';
+  if (spotifyUsername != null || currentSong != null || trackID != null) {
+    return '$spotifyUsername|$currentSong|$trackID';
+  } else {
+    Future.delayed(Duration(seconds: 5));
+    createPayload();
+  }
+  return 'something went wrong';
 }
 
-  // TODO: this will need to be updated periodically
   Future<void> loadData() async {
     final SharedPreferences prefs = await getStorageInstance();
     spotifyUsername = spotifyService.getCurrentUser(prefs);

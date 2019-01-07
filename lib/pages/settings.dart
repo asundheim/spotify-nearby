@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../backend/apiTesting.dart';
+import '../backend/spotifyApiTesting.dart';
 import '../backend/storageService.dart';
 import '../backend/settingsService.dart' as settingsService;
 import '../backend/spotifyService.dart' as spotifyService;
 import '../backend/themeService.dart' as themeService;
-import 'package:spotify_nearby/backend/nearbyApi.dart';
+import 'package:spotify_nearby/backend/nearbyApiTesting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 

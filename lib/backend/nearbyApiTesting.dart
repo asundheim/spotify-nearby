@@ -11,10 +11,18 @@ class Nearby extends StatefulWidget {
 
 class NearbyState extends State<Nearby> {
 
-  static const MethodChannel platform = MethodChannel('com.anderssundheim.spotifynearby/nearby');
+  static const MethodChannel platform = MethodChannel(
+      'com.anderssundheim.spotifynearby/nearby');
+
+  String payload = 'loading';
+
+  Future<void> makePayload() async {
+    payload = await nearbyService.createPayload();
+}
 
   @override
   Widget build(BuildContext context) {
+    makePayload();
     return Material(
       child: Padding(
         padding: const EdgeInsets.only(top: 50.0),
@@ -23,9 +31,10 @@ class NearbyState extends State<Nearby> {
             children: <Widget>[
               RaisedButton(onPressed: _startNearby, child: const Text('Start'),),
               RaisedButton(onPressed: _onPressed, child: const Text('Refresh'),),
-              Text(_status),
+              Text(nearbyService.sharing ? 'Sharing' : 'Not Sharing'),
               Text('ID: ' + nearbyService.uniqueID),
               Text('Connected IDs: ' + nearbyService.receivedUniqueID.toString()),
+              Text('My payload: $payload'),
               Text('Payload: ' + nearbyService.test)
             ],
           ),
@@ -36,7 +45,6 @@ class NearbyState extends State<Nearby> {
 
 
   // Show status
-  String _status = 'Null';
 
   void _onPressed() {
     setState(() {
@@ -47,6 +55,5 @@ class NearbyState extends State<Nearby> {
 
   Future<void> _startNearby() async {
     nearbyService.startNearbyService();
-    setState(() => _status = 'Discovery and Advertising On');
   }
 }

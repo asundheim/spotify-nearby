@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 
-String client_id = 'a08c7a5c79304ac1bb28fed5b687f0c1';
-String client_secret = '2d710351a8ef47c18e29c875da325b7f';
+String clientID = 'a08c7a5c79304ac1bb28fed5b687f0c1';
+String clientSecret = '2d710351a8ef47c18e29c875da325b7f';
 
 Client client = Client();
 
@@ -15,11 +15,11 @@ Future<Response> initialAuth(String code, SharedPreferences prefs) {
     updateRefreshToken(map['refresh_token'], prefs);
     updateExpireTime(map['expires_in'].toString(), prefs);
     updateCurrentUser(map['access_token'], prefs);
-  });
+  }).catchError((e) => print('error initialAuth'));
 }
 
 Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
-  return client.post('https://accounts.spotify.com/api/token', headers: clientHeaders(), body: refreshBody(refreshToken)).catchError((e) => print('error refreshAuth'))
+  return client.post('https://accounts.spotify.com/api/token', headers: clientHeaders(), body: refreshBody(refreshToken))
       .then((Response result) {
         final Map<String, dynamic> map = json.decode(result.body);
         updateAuthToken(map['access_token'], prefs);
@@ -27,24 +27,24 @@ Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
         if (map.containsKey('refresh_token')) {
           updateRefreshToken(map['refresh_token'], prefs);
         }
-    });
+    }).catchError((e) => print('error refreshAuth'));
 }
 
 Future<Map<String, dynamic>> nowPlaying(String authToken) async {
   Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
-  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken)).catchError((e) => print('error NowPlaying'))
+  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
         //print(response.body);
         if (response.body != '') {
           map = json.decode(response.body)['item'];
         }
-      });
+      }).catchError((e) => print('error NowPlaying'));
   return map;
 }
 
 void updateInfo(String authToken, SharedPreferences prefs) async {
   Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
-  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken)).catchError((e) => print('error updateInfo'))
+  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
     //print(response.body);
     if (response.body != '') {
@@ -54,28 +54,28 @@ void updateInfo(String authToken, SharedPreferences prefs) async {
       String id = map['id'];
       prefs.setString('song_id', id);
     }
-  });
+  }).catchError((e) => print('error updateInfo'));
 }
 
 String getNowPlaying(SharedPreferences prefs) =>
-  prefs.getString('now_playing') ?? 'Nothing is Playing';
+  prefs.getString('now_playing') ?? null;
 
 String getSongId(SharedPreferences prefs) =>
-    prefs.getString('song_id') ?? 'error';
+    prefs.getString('song_id') ?? null;
 
 Future<Map<String, dynamic>> getUserData(String authToken) async {
   Map<String, dynamic> map = <String, dynamic>{'display_name': 'Unable to retrieve username'};
-  await client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken)).catchError((e) => print('error getUserData'))
+  await client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
         if (response.body != '') {
           map = json.decode(response.body);
         }
-      });
+      }).catchError((e) => print('error getUserData'));
   return map;
 }
 
 String getCurrentUser(SharedPreferences prefs) =>
-    prefs.getString('current_user');
+    prefs.getString('current_user') ?? null;
 
 void updateAuthToken(String authToken, SharedPreferences prefs) =>
     prefs.setString('auth_token', authToken);
@@ -118,7 +118,7 @@ bool authTokenExpired(SharedPreferences prefs) =>
 
 Map<String, String> clientHeaders() {
   return <String, String> {
-    'Authorization': 'Basic ${base64Encode(utf8.encode(client_id + ':' + client_secret))}'
+    'Authorization': 'Basic ${base64Encode(utf8.encode(clientID + ':' + clientSecret))}'
   };
 }
 

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import '../backend/spotifyService.dart' as spotifyService;
@@ -54,7 +53,8 @@ class _AuthState extends State<Auth> {
     return Material(
       color: Colors.green,
       child: InkWell(
-        onTap: () => setState(() => flutterWebviewPlugin.launch(loginURL)),
+        // TODO fix error here
+        onTap: () => setState(() => flutterWebviewPlugin.launch(loginURL).catchError((e) => print('error Launch loginURL'))),
         splashColor: Colors.greenAccent,
         child: Center(
           child: Padding(
