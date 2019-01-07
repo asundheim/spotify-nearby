@@ -14,9 +14,9 @@ String currentSong = 'none';
 String trackID = 'none';
 
 List<dynamic> receivedUniqueID = <dynamic>[];
-List<String> receivedSpotifyUsername;
-List<String> receivedCurrentSong;
-List<String> receivedTrackID;
+List<String> receivedSpotifyUsername = <String>['DarthEvandar','Budde25'];
+List<String> receivedCurrentSong = <String>['My Favorite Song', 'Fireflies'];
+List<String> receivedTrackID = <String>['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
 
 String test = 'null';
 
@@ -70,35 +70,34 @@ void sendPayload(String endpointID, String payload) {
 }
 
 Future<void> receivedData() async {
-  String outputData;
+  String unparsedData;
   try {
     final String result = await platform.invokeMethod('receivedPayload');
     if (result != null) {
-      outputData = result;
+      unparsedData = result;
     }
   } on PlatformException catch (e) {
     print(e.message);
   }
-  // TEMP FOR TESTING
-  test = outputData;
-  // TODO add data parsing
+  // TODO check for errors
+  List<String> parsedData = unparsedData.split('|');
+  receivedSpotifyUsername.add(parsedData[0]);
+  receivedCurrentSong.add(parsedData[1]);
+  receivedTrackID.add(parsedData[2]);
 }
 
 Future<String> createPayload() async {
   await loadData();
+  //print('$spotifyUsername|$currentSong|$trackID');
   return '$spotifyUsername|$currentSong|$trackID';
 }
 
   // TODO: this will need to be updated periodically
   Future<void> loadData() async {
     final SharedPreferences prefs = await getStorageInstance();
-    final String playing = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs))
-        .then((Map<String, dynamic> map) => map['name']);
-    final String track = await spotifyService.getNowPlaying(spotifyService.getAuthToken(prefs))
-        .then((Map<String, dynamic> map) => map['id']);
     spotifyUsername = spotifyService.getCurrentUser(prefs);
-    currentSong = playing;
-    trackID = track;
+    currentSong = spotifyService.getNowPlaying(prefs);
+    trackID = spotifyService.getSongId(prefs);
   }
 
 

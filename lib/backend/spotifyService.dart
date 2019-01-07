@@ -19,7 +19,7 @@ Future<Response> initialAuth(String code, SharedPreferences prefs) {
 }
 
 Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
-  return client.post('https://accounts.spotify.com/api/token', headers: clientHeaders(), body: refreshBody(refreshToken))
+  return client.post('https://accounts.spotify.com/api/token', headers: clientHeaders(), body: refreshBody(refreshToken)).catchError((e) => print('error refreshAuth'))
       .then((Response result) {
         final Map<String, dynamic> map = json.decode(result.body);
         updateAuthToken(map['access_token'], prefs);
@@ -30,11 +30,11 @@ Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
     });
 }
 
-Future<Map<String, dynamic>> getNowPlaying(String authToken) async {
+Future<Map<String, dynamic>> nowPlaying(String authToken) async {
   Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
-  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
+  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken)).catchError((e) => print('error NowPlaying'))
       .then<Map<String, dynamic>>((Response response) {
-        print(response.body);
+        //print(response.body);
         if (response.body != '') {
           map = json.decode(response.body)['item'];
         }
@@ -42,9 +42,30 @@ Future<Map<String, dynamic>> getNowPlaying(String authToken) async {
   return map;
 }
 
+void updateInfo(String authToken, SharedPreferences prefs) async {
+  Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
+  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken)).catchError((e) => print('error updateInfo'))
+      .then<Map<String, dynamic>>((Response response) {
+    //print(response.body);
+    if (response.body != '') {
+      map = json.decode(response.body)['item'];
+      String nowPlaying = map['name'];
+      prefs.setString('now_playing', nowPlaying);
+      String id = map['id'];
+      prefs.setString('song_id', id);
+    }
+  });
+}
+
+String getNowPlaying(SharedPreferences prefs) =>
+  prefs.getString('now_playing') ?? 'Nothing is Playing';
+
+String getSongId(SharedPreferences prefs) =>
+    prefs.getString('song_id') ?? 'error';
+
 Future<Map<String, dynamic>> getUserData(String authToken) async {
   Map<String, dynamic> map = <String, dynamic>{'display_name': 'Unable to retrieve username'};
-  await client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
+  await client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken)).catchError((e) => print('error getUserData'))
       .then<Map<String, dynamic>>((Response response) {
         if (response.body != '') {
           map = json.decode(response.body);
