@@ -20,7 +20,6 @@ List<String> receivedSongTitle = <String>[];
 List<String> receivedSongUrl = <String>[];
 
 String test = 'null';
-bool sharing = false;
 
 void sendUniqueID(String message) {
   try {
@@ -39,8 +38,7 @@ void clearData() {
 
 Future<void> startNearbyService() async {
   final SharedPreferences prefs = await getStorageInstance();
-  if (settingsService.isSharing(prefs) && !sharing) {
-    sharing = true;
+  if (settingsService.isSharing(prefs)) {
     try {
       platform.invokeMethod('startNearbyService');
     } on PlatformException catch (e) {
@@ -67,8 +65,14 @@ Future<void> getConnectionsID() async {
     if (result != null) {
     receivedUniqueID.replaceRange(0, receivedUniqueID.length, result);
     int index = 0;
-    for (int i = index; i < receivedUniqueID.length; i++){
-      sendPayload(receivedUniqueID[i], await createPayload());
+    for (int i = index; i < receivedUniqueID.length; i++) {
+      String payload = await createPayload();
+      while (payload == null) {
+        Future.delayed(Duration(seconds: 5));
+        print('payload null, realoding');
+        await createPayload();
+      }
+      sendPayload(receivedUniqueID[i], payload);
       index++;
     }}
   } on PlatformException catch (e) {
@@ -90,40 +94,58 @@ Future<void> receivedData() async {
     final String result = await platform.invokeMethod('receivedPayload');
     if (result != null) {
       unparsedData = result;
+      print('Recieved a valid payload');
+    } else {
+      print('Recievied a null paylaod');
+      return;
     }
   } on PlatformException catch (e) {
     print(e.message);
   }
-
-  if (unparsedData == 'something went wrong') {
-    print('Something went wrong');
+  List<String> parsedData;
+  if (unparsedData != null) {
+    print('Parsing Data');
+    parsedData = unparsedData.split('|');
   } else {
-    List<String> parsedData = unparsedData.split('|');
+    print('Error parsedData not length 3');
+    print('Parsed data is: $parsedData');
+    print('Unparsed data is $unparsedData');
+    return;
+  }
+  if (parsedData != null && parsedData.length == 3) {
+    bool isAdded = false;
     if (receivedUserAccount != null) {
-      for (int i = 0; i < receivedUserAccount.length; i++)
+      for (int i = 0; i < receivedUserAccount.length; i++) {
         if (receivedUserAccount[i] == parsedData[0]) {
           receivedSongTitle.insert(i, parsedData[1]);
           receivedSongUrl.insert(i, parsedData[2]);
-        } else {
-          receivedUserAccount.add(parsedData[0]);
-          receivedSongTitle.add(parsedData[1]);
-          receivedSongUrl.add(parsedData[2]);
+          print('Updated old entry');
+          isAdded = true;
         }
+      }
+      if (!isAdded) {
+        receivedUserAccount.add(parsedData[0]);
+        receivedSongTitle.add(parsedData[1]);
+        receivedSongUrl.add(parsedData[2]);
+        print('Added new entry');
+      }
     } else {
-      print('Null List');
+      print('Parse list error');
     }
+  } else {
+    print('Got some null data somehow, idk fix it');
+    return;
   }
 }
 
 Future<String> createPayload() async {
   await loadData();
   if (spotifyUsername != null || currentSong != null || trackID != null) {
+    print('Created payload');
     return '$spotifyUsername|$currentSong|$trackID';
   } else {
-    Future.delayed(Duration(seconds: 5));
-    createPayload();
+    return null;
   }
-  return 'something went wrong';
 }
 
   Future<void> loadData() async {

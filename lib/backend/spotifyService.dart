@@ -15,7 +15,9 @@ Future<Response> initialAuth(String code, SharedPreferences prefs) {
     updateRefreshToken(map['refresh_token'], prefs);
     updateExpireTime(map['expires_in'].toString(), prefs);
     updateCurrentUser(map['access_token'], prefs);
-  }).catchError((e) => print('error initialAuth'));
+  }).catchError((e) {
+    print('error initialAuth');
+  });
 }
 
 Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {

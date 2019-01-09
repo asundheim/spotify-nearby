@@ -20,6 +20,8 @@ import 'pages/home.dart';
  * TODO: Transmit Spotify data
  * TODO: Implement Nearby Sharing toggle in settings
  * TODO: Implement Logout in settings
+ *
+ * TODO: BUG closing app background disconnects bluetooth earbuds
  */
 
 
@@ -113,4 +115,5 @@ class MyAppState extends State<MyApp> {
 Future<void> refresh()  async {
   spotifyService.updateInfo(spotifyService.getAuthToken(await getStorageInstance()), await getStorageInstance());
   nearbyService.getConnectionsID();
+  nearbyService.receivedData();
 }

@@ -31,7 +31,7 @@ class NearbyState extends State<Nearby> {
             children: <Widget>[
               RaisedButton(onPressed: _startNearby, child: const Text('Start'),),
               RaisedButton(onPressed: _onPressed, child: const Text('Refresh'),),
-              Text(nearbyService.sharing ? 'Sharing' : 'Not Sharing'),
+              //Text(nearbyService.sharing ? 'Sharing' : 'Not Sharing'),
               Text('ID: ' + nearbyService.uniqueID),
               Text('Connected IDs: ' + nearbyService.receivedUniqueID.toString()),
               Text('My payload: $payload'),

@@ -66,8 +66,8 @@ class HomeState extends State<Home> {
               InkWell(
                 onTap: () =>  _launchSpotify(''),
               child: ListTile(
-                title: Text('Signed in as: ' + (currentUser == null ? 'Not logged in' : currentUser), textAlign: TextAlign.center),
-                subtitle: Text('Currently Playing: ' + (currentlyPlaying == null ? 'Nothing is playing': currentlyPlaying), textAlign: TextAlign.center),
+                title: Text(currentlyPlaying == null ? 'Nothing is playing': currentlyPlaying, textAlign: TextAlign.center),
+                subtitle: Text(currentUser == null ? 'Not logged in' : currentUser, textAlign: TextAlign.center),
                 ),
               ),
               Expanded(

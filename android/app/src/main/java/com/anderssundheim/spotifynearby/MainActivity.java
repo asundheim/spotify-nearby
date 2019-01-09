@@ -63,7 +63,7 @@ public class MainActivity extends FlutterActivity {
     // Non final
     private ArrayList<String> receivedEndpointID = new ArrayList<>();
     private String receivedID;
-    private String receivedPayload = "null";
+    private String receivedPayload;
 
     // Handle for nearby
     private ConnectionsClient connectionsClient;
