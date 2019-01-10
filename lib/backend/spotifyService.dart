@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,14 +10,12 @@ String clientSecret = '2d710351a8ef47c18e29c875da325b7f';
 Client client = Client();
 
 Future<Response> initialAuth(String code, SharedPreferences prefs) {
-  return client.post('https://accounts.spotify.com/api/token', headers:  clientHeaders(), body: preAuthBody(code)).then((Response response){
+  return client.post('https://accounts.spotify.com/api/token', headers:  clientHeaders(), body: preAuthBody(code)).then((Response response) {
     final Map<String, dynamic> map = json.decode(response.body);
     updateAuthToken(map['access_token'], prefs);
     updateRefreshToken(map['refresh_token'], prefs);
     updateExpireTime(map['expires_in'].toString(), prefs);
     updateCurrentUser(map['access_token'], prefs);
-  }).catchError((e) {
-    print('error initialAuth');
   });
 }
 
@@ -29,55 +28,56 @@ Future<Response> refreshAuth(String refreshToken, SharedPreferences prefs) {
         if (map.containsKey('refresh_token')) {
           updateRefreshToken(map['refresh_token'], prefs);
         }
-    }).catchError((e) => print('error refreshAuth'));
+    });
 }
 
 Future<Map<String, dynamic>> nowPlaying(String authToken) async {
-  Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
-  await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
+  return client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
-        //print(response.body);
-        if (response.body != '') {
-          map = json.decode(response.body)['item'];
+        if (response.body != '' && response.statusCode == 200) {
+          return json.decode(response.body)['item'];
+        } else {
+          if (response.statusCode == 204) {
+            throw 'No song playing';
+          }
+          throw 'Unexpected Error';
         }
-      }).catchError((e) => print('error NowPlaying'));
-  return map;
+      })
+      .catchError((Object e) => <String, dynamic>{'name': 'No song playing'},
+        test: (Object e) => e == 'No song playing')
+      .catchError((Object e) => <String, dynamic>{'name': 'Unable to retrieve Song'},
+        test: (Object e) => e == 'Unexpected Error');
+
 }
 
-void updateInfo(String authToken, SharedPreferences prefs) async {
+Future<void> updateInfo(String authToken, SharedPreferences prefs) async {
   Map<String, dynamic> map = <String, dynamic>{'name': 'No song playing'};
   await client.get('https://api.spotify.com/v1/me/player/currently-playing', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
     //print(response.body);
-    if (response.body != '') {
+    if (response.body != '' && response.statusCode == 200) {
       map = json.decode(response.body)['item'];
-      String nowPlaying = map['name'];
+      final String nowPlaying = map['name'];
       prefs.setString('now_playing', nowPlaying);
-      String id = map['id'];
+      final String id = map['id'];
       prefs.setString('song_id', id);
     }
-  }).catchError((e) => print('error updateInfo'));
+  });
 }
-
-String getNowPlaying(SharedPreferences prefs) =>
-  prefs.getString('now_playing') ?? null;
-
-String getSongId(SharedPreferences prefs) =>
-    prefs.getString('song_id') ?? null;
 
 Future<Map<String, dynamic>> getUserData(String authToken) async {
-  Map<String, dynamic> map = <String, dynamic>{'display_name': 'Unable to retrieve username'};
-  await client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
+  Map<String, dynamic> map;
+  return client.get('https://api.spotify.com/v1/me', headers: authHeaders(authToken))
       .then<Map<String, dynamic>>((Response response) {
-        if (response.body != '') {
+        if (response.body != '' && response.statusCode == 200) {
           map = json.decode(response.body);
+        } else {
+          throw 'Invalid Response';
         }
-      }).catchError((e) => print('error getUserData'));
-  return map;
+        return map;
+      })
+      .catchError((Object error) => <String, dynamic>{'display_name': 'Unable to retrieve username'});
 }
-
-String getCurrentUser(SharedPreferences prefs) =>
-    prefs.getString('current_user') ?? null;
 
 void updateAuthToken(String authToken, SharedPreferences prefs) =>
     prefs.setString('auth_token', authToken);
@@ -106,6 +106,15 @@ String getRefreshToken(SharedPreferences prefs) =>
 
 String getAuthToken(SharedPreferences prefs) =>
     prefs.getString('auth_token');
+
+String getNowPlaying(SharedPreferences prefs) =>
+    prefs.getString('now_playing');
+
+String getSongId(SharedPreferences prefs) =>
+    prefs.getString('song_id');
+
+String getCurrentUser(SharedPreferences prefs) =>
+    prefs.getString('current_user');
 
 void clearTokens(SharedPreferences prefs) {
   prefs.remove('auth_token');

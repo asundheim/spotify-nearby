@@ -54,7 +54,7 @@ class _AuthState extends State<Auth> {
       color: Colors.green,
       child: InkWell(
         // TODO fix error here
-        onTap: () => setState(() => flutterWebviewPlugin.launch(loginURL).catchError((e) => print('error Launch loginURL'))),
+        onTap: () => setState(() => flutterWebviewPlugin.launch(loginURL).catchError((Error e) => print('error Launch loginURL'))),
         splashColor: Colors.greenAccent,
         child: Center(
           child: Padding(

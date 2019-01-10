@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../backend/spotifyApiTesting.dart';
 import '../backend/storageService.dart';
 import '../backend/settingsService.dart' as settingsService;
 import '../backend/spotifyService.dart' as spotifyService;
@@ -61,11 +60,6 @@ class SettingsState extends State<Settings> {
               key: const Key('currentlySharing')
             ),
             _accountSetting(),
-            _textButton(
-              text: 'Spotify API stuff',
-              subtitle: 'shhhhh',
-              key: const Key('API'),
-            ),
             ListTile(
               title: const Text('Nearby API stuff'),
               subtitle: const Text('keep out'),
@@ -87,16 +81,6 @@ class SettingsState extends State<Settings> {
       trailing: Switch(
           value: value,
           onChanged: onChange,
-      ),
-      key: key,
-    );
-  }
-
-  Widget _textButton({String text, String subtitle, Key key,} ) {
-    return ListTile(
-      title: Text(text),
-      subtitle: Text(subtitle),
-      onTap: () => Navigator.push<Object> (context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MyHomePage())
       ),
       key: key,
     );
@@ -160,6 +144,7 @@ class SettingsState extends State<Settings> {
 
   Future<void> _loadSharing() async {
     final SharedPreferences prefs = await getStorageInstance();
+    spotifyService.nowPlaying(spotifyService.getAuthToken(prefs));
     setState(() => _isSharing = settingsService.isSharing(prefs));
   }
 

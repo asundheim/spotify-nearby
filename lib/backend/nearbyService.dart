@@ -50,7 +50,7 @@ Future<void> startNearbyService() async {
   }
 }
 
-void stopNearbyService() async {
+void stopNearbyService() {
   try {
     platform.invokeMethod('stopNearbyService');
   } on PlatformException catch (e) {
@@ -68,7 +68,7 @@ Future<void> getConnectionsID() async {
     for (int i = index; i < receivedUniqueID.length; i++) {
       String payload = await createPayload();
       while (payload == null) {
-        Future.delayed(Duration(seconds: 5));
+        await Future<dynamic>.delayed(Duration(seconds: 5));
         print('payload null, realoding');
         await createPayload();
       }
