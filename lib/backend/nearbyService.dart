@@ -61,20 +61,20 @@ void stopNearbyService() {
 Future<void> getConnectionsID() async {
   try {
     final List<dynamic> result = await platform.invokeMethod('getConnections');
-
     if (result != null) {
-    receivedUniqueID.replaceRange(0, receivedUniqueID.length, result);
-    int index = 0;
-    for (int i = index; i < receivedUniqueID.length; i++) {
-      String payload = await createPayload();
-      while (payload == null) {
-        await Future<dynamic>.delayed(Duration(seconds: 5));
-        print('payload null, realoding');
-        await createPayload();
+      receivedUniqueID.replaceRange(0, receivedUniqueID.length, result);
+      int index = 0;
+        for (int i = index; i < receivedUniqueID.length; i++) {
+          final String payload = await createPayload();
+          while (payload == null) {
+            await Future <dynamic>.delayed(Duration(seconds: 5));
+            print('payload null, realoding');
+            await createPayload();
+          }
+        sendPayload(receivedUniqueID[i], payload);
+        index++;
       }
-      sendPayload(receivedUniqueID[i], payload);
-      index++;
-    }}
+    }
   } on PlatformException catch (e) {
     print(e.message);
   }
@@ -142,6 +142,7 @@ Future<String> createPayload() async {
   await loadData();
   if (spotifyUsername != null || currentSong != null || trackID != null) {
     print('Created payload');
+    // TODO turn this into a map
     return '$spotifyUsername|$currentSong|$trackID';
   } else {
     return null;
@@ -154,5 +155,3 @@ Future<String> createPayload() async {
     currentSong = spotifyService.getNowPlaying(prefs);
     trackID = spotifyService.getSongId(prefs);
   }
-
-

@@ -20,7 +20,7 @@ void main() {
   setUp(() async => spotifyService.clearTokens(await getStorageInstance()));
 
   test('initial auth storage', () async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -41,7 +41,7 @@ void main() {
   });
 
   test('refresh auth storage', () async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -75,7 +75,7 @@ void main() {
   });
 
   test('detect expired token', () async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic>{
@@ -96,7 +96,6 @@ void main() {
   });
 
   test('get currently playing should song playing', () async {
-
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> map = <String, dynamic>{'item': <String, dynamic>{'name': 'mo bomba'}};
       return Response(json.encode(map), 200);
