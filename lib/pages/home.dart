@@ -83,8 +83,23 @@ class HomeState extends State<Home> {
                       child: ListTile(
                         title: Text(titleData[1][index]),
                         subtitle: Text(titleData[0][index]),
-                        trailing: const Icon(Icons.music_note),
-                        onTap: () => _launchSpotify(titleData[2][index])
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            InkWell(
+                              child: IconButton(
+                                  icon: const Icon(Icons.music_note),
+                                  onPressed: () => _launchSpotify(titleData[2][index]),
+                              ),
+                            ),
+                            InkWell(
+                              child: IconButton(
+                                  icon: const Icon(Icons.account_circle),
+                                  onPressed: () => _launchUser(titleData[0][index])
+                              )
+                            )
+                          ],
+                        ),
                         ),
                     );
                   }
@@ -115,6 +130,15 @@ class HomeState extends State<Home> {
 
   Future<void> _launchSpotify(String track) async {
     final String url = 'https://open.spotify.com/track/$track';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _launchUser(String user) async {
+    final String url = 'https://open.spotify.com/user/$user';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

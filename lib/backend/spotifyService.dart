@@ -93,7 +93,7 @@ void updateRefreshToken(String refreshToken, SharedPreferences prefs) =>
 void updateCurrentUser(String auth, SharedPreferences prefs) {
   client.get('https://api.spotify.com/v1/me', headers: authHeaders(auth))
       .then((Response response) {
-        prefs.setString('current_user', json.decode(response.body)['display_name']);
+        prefs.setString('current_user', json.decode(response.body)['id']);
       }
   );
 }
