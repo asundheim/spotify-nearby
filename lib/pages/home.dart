@@ -13,13 +13,12 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   // TODO also need values here, thanks!
-  String currentUser = 'shouldn\'t be seeing this';
-  String currentlyPlaying = 'Nothing is Playing';
+  String currentUser;
+  String currentlyPlaying;
 
-  // TODO Initialized with test values, delete when implementing, just pass data too all three Lists
-  static List<String> userAccount = <String>['DarthEvandar','Budde25'];
-  static List<String> songTitle = <String>['My Favorite Song', 'Fireflies'];
-  static List<String> songUrl = <String>['0FutrWIUM5Mg3434asiwkp', '3DamFFqW32WihKkTVlwTYQ'];
+  static List<String> userAccount = <String>[];
+  static List<String> songTitle = <String>[];
+  static List<String> songUrl = <String>[];
   static List<List<String>> titleData = <List<String>>[userAccount,songTitle,songUrl];
   static int _listLength = 0;
 
@@ -35,6 +34,7 @@ class HomeState extends State<Home> {
 
     _listLengthMin();
     _loadNowPlaying();
+    _loadCurrentUser();
     _updateTiles();
 
     return Scaffold(
@@ -66,8 +66,8 @@ class HomeState extends State<Home> {
               InkWell(
                 onTap: () =>  _launchSpotify(''),
               child: ListTile(
-                title: Text('Signed in as: $currentUser', textAlign: TextAlign.center),
-                subtitle: Text('Currently Playing: $currentlyPlaying', textAlign: TextAlign.center),
+                title: Text(currentlyPlaying == null ? 'Nothing is playing': currentlyPlaying, textAlign: TextAlign.center),
+                subtitle: Text(currentUser == null ? 'Not logged in' : currentUser, textAlign: TextAlign.center),
                 ),
               ),
               Expanded(
@@ -98,13 +98,19 @@ class HomeState extends State<Home> {
     );
   }
 
+  // Should actually be useless but doesn't hurt, might save us trouble down the line
   void _listLengthMin() {
-    setState(() {
-      for (int i = 0; i < 2; i++) {
-        userAccount.length < songTitle.length ? _listLength = userAccount.length : _listLength = songTitle.length;
-        userAccount.length < songUrl.length ? _listLength = userAccount.length : _listLength = songUrl.length;
-      }
-    });
+    if (userAccount != null && songUrl != null && songTitle != null) {
+      setState(() {
+        for (int i = 0; i < 2; i++) {
+          userAccount.length < songTitle.length ?
+          _listLength = userAccount.length : _listLength = songTitle.length;
+          userAccount.length < songUrl.length
+              ? _listLength = userAccount.length
+              : _listLength = songUrl.length;
+        }
+      });
+    }
   }
 
   Future<void> _launchSpotify(String track) async {
@@ -133,18 +139,11 @@ class HomeState extends State<Home> {
     setState(() => currentlyPlaying = spotifyService.getNowPlaying(prefs));
   }
 
-  // TODO: this will need to be updated periodically
-  Future<void> loadCurrentlyPlaying() async {
-    final String playing = await spotifyService.nowPlaying(spotifyService.getAuthToken(await getStorageInstance()))
-        .then((Map<String, dynamic> map) => map['name']);
-    setState(() => currentlyPlaying = playing);
-  }
-
   void _updateTiles() {
     setState(() {
-      userAccount = nearbyService.receivedSpotifyUsername;
-      songTitle = nearbyService.receivedCurrentSong;
-      songUrl = nearbyService.receivedTrackID;
+      userAccount = nearbyService.receivedUserAccount;
+      songTitle = nearbyService.receivedSongTitle;
+      songUrl = nearbyService.receivedSongUrl;
     });
   }
 }

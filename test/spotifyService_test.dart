@@ -20,7 +20,7 @@ void main() {
   setUp(() async => spotifyService.clearTokens(await getStorageInstance()));
 
   test('initial auth storage', () async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -41,7 +41,7 @@ void main() {
   });
 
   test('refresh auth storage', () async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic> {
@@ -75,7 +75,7 @@ void main() {
   });
 
   test('detect expired token', () async {
-    SharedPreferences prefs = await getStorageInstance();
+    final SharedPreferences prefs = await getStorageInstance();
     // Mock http calls
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> mapJson = <String, dynamic>{
@@ -95,19 +95,37 @@ void main() {
     expect(spotifyService.authTokenExpired(prefs), true);
   });
 
-  test('get currently playing should return a message on no song playing', () async {
-    spotifyService.client = MockClient((Request request) async {
-      return Response('', 200);
-    });
-    expect((await spotifyService.nowPlaying(''))['name'], 'No song playing');
-  });
-
   test('get currently playing should song playing', () async {
-
     spotifyService.client = MockClient((Request request) async {
       final Map<String, dynamic> map = <String, dynamic>{'item': <String, dynamic>{'name': 'mo bomba'}};
       return Response(json.encode(map), 200);
     });
     expect((await spotifyService.nowPlaying(''))['name'], 'mo bomba');
+  });
+
+  test('bad response code should trigger default data for userdata', () async {
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> map = <String, dynamic>{'item': <String, dynamic>{'name': 'mo bomba'}};
+      return Response(json.encode(map), 418);
+    });
+    expect((await spotifyService.getUserData(''))['display_name'], 'Unable to retrieve username');
+  });
+
+  test('bad response body should trigger default data for userdata', () async {
+    spotifyService.client = MockClient((Request request) async => Response('', 200));
+    expect((await spotifyService.getUserData(''))['display_name'], 'Unable to retrieve username');
+  });
+
+  test('204 should trigger correct response message for nowplaying', () async {
+    spotifyService.client = MockClient((Request request) async {
+      final Map<String, dynamic> map = <String, dynamic>{'item': <String, dynamic>{'name': 'mo bomba'}};
+      return Response(json.encode(map), 204);
+    });
+    expect((await spotifyService.nowPlaying(''))['name'], 'No song playing');
+  });
+
+  test('empty body should trigger correct response message for nowplaying', () async {
+    spotifyService.client = MockClient((Request request) async => Response('', 200));
+    expect((await spotifyService.nowPlaying(''))['name'], 'Unable to retrieve Song');
   });
 }

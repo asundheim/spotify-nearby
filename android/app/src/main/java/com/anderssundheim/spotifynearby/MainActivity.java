@@ -52,8 +52,6 @@ public class MainActivity extends FlutterActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
-    // Random device Id generator
-    static Random rand = new Random();
     // For use talking to flutter
     private static final String CHANNEL = "com.anderssundheim.spotifynearby/nearby";
 
@@ -65,13 +63,12 @@ public class MainActivity extends FlutterActivity {
     // Non final
     private ArrayList<String> receivedEndpointID = new ArrayList<>();
     private String receivedID;
-    private String receivedPayload = "null";
+    private String receivedPayload;
 
     // Handle for nearby
     private ConnectionsClient connectionsClient;
 
     // Callbacks for receiving payloads
-    @TargetApi(19)
     private final PayloadCallback payloadCallback =
             new PayloadCallback() {
                 @Override
@@ -135,6 +132,11 @@ public class MainActivity extends FlutterActivity {
         Log.i(TAG, "Searching");
     }
 
+    public void stopAdvertiseAndDiscover() {
+        connectionsClient.stopAdvertising();
+        connectionsClient.stopDiscovery();
+    }
+
     /** Starts looking for other players using Nearby Connections. */
     private void startDiscovery() {
         // Note: Discovery may fail. To keep this demo simple, we don't handle failures.
@@ -151,7 +153,6 @@ public class MainActivity extends FlutterActivity {
                 new AdvertisingOptions.Builder().setStrategy(STRATEGY).build());
     }
 
-    @TargetApi(19)
     private void sendPayload(String destinationEndpointID, String payload) {
         connectionsClient.sendPayload(
                 destinationEndpointID, Payload.fromBytes(payload.getBytes(UTF_8)));
@@ -184,6 +185,9 @@ public class MainActivity extends FlutterActivity {
                       }
                       if (call.method.equals("receivedPayload")) {
                           result.success(receivedPayload);
+                      }
+                      if (call.method.equals("stopNearbyService")) {
+                          stopAdvertiseAndDiscover();
                       }
 
                       /*else {

@@ -5,8 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'backend/themeService.dart' as themeService;
 import 'backend/spotifyService.dart' as spotifyService;
+import 'backend/nearbyService.dart' as nearbyService;
 import 'backend/storageService.dart';
 
+import 'pages/authLoading.dart';
 import 'pages/auth.dart';
 import 'pages/home.dart';
 
@@ -18,11 +20,14 @@ import 'pages/home.dart';
  * TODO: Transmit Spotify data
  * TODO: Implement Nearby Sharing toggle in settings
  * TODO: Implement Logout in settings
+ *
+ * TODO: BUG closing app background disconnects bluetooth earbuds
  */
 
 
 void main() {
   runApp(MyApp());
+  nearbyService.startNearbyService();
   Timer.periodic(Duration(seconds: 5), (Timer t) => refresh());
 }
 
@@ -68,8 +73,7 @@ class MyAppState extends State<MyApp> {
                   return Auth();
                 }
                 } else {
-                  // Splash screen goes here
-                  return const Text('loading');
+                  return AuthLoading();
                 }
               }
             ),
@@ -110,4 +114,6 @@ class MyAppState extends State<MyApp> {
 
 Future<void> refresh()  async {
   spotifyService.updateInfo(spotifyService.getAuthToken(await getStorageInstance()), await getStorageInstance());
+  nearbyService.getConnectionsID();
+  nearbyService.receivedData();
 }
