@@ -62,8 +62,7 @@ public class MainActivity extends FlutterActivity {
 
     // Non final
     private ArrayList<String> receivedEndpointID = new ArrayList<>();
-    private String receivedID;
-    private String receivedPayload;
+    private ArrayList<String> receivedPayload = new ArrayList<>();
 
     // Handle for nearby
     private ConnectionsClient connectionsClient;
@@ -73,13 +72,22 @@ public class MainActivity extends FlutterActivity {
             new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
-                    receivedPayload = String.valueOf(new String(payload.asBytes(),UTF_8));
+                    String receivedPayloadString = String.valueOf(new String(payload.asBytes(),UTF_8));
+                    String[] parsed = receivedPayloadString.split("|");
+                    if(receivedPayload.size() == 0) {
+                        receivedPayload.add(receivedPayloadString);
+                    }
+                    for(int i = 0; i < receivedPayload.size(); i++) {
+                        if(!receivedPayload.get(i).contains(parsed[0])) {
+                            receivedPayload.add(receivedPayloadString);
+                        }
+                    }
                 }
 
                 @Override
                 public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {
                     if (update.getStatus() == Status.SUCCESS) {
-                        // TODO add here
+                        Log.i(TAG, "onPayloadTransferUpdate: " + endpointId + " transfer: " + update);
                     }
                 }
             };
@@ -89,12 +97,14 @@ public class MainActivity extends FlutterActivity {
             new EndpointDiscoveryCallback() {
                 @Override
                 public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
-                    Log.i(TAG, "onEndpointFound: endpoint found, connecting");
+                    Log.i(TAG, "onEndpointFound: endpoint found, connecting to: " + endpointId);
                     connectionsClient.requestConnection(ID, endpointId, connectionLifecycleCallback);
                 }
 
                 @Override
-                public void onEndpointLost(String endpointId) {}
+                public void onEndpointLost(String endpointId) {
+                    Log.i(TAG, "onEndpointLost: endpoint lost: " + endpointId);
+                }
             };
 
     // Callbacks for connections to other devices
@@ -104,24 +114,24 @@ public class MainActivity extends FlutterActivity {
                 public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
                     Log.i(TAG, "onConnectionInitiated: accepting connection");
                     connectionsClient.acceptConnection(endpointId, payloadCallback);
-                    receivedID = connectionInfo.getEndpointName();
+                    //receivedID = connectionInfo.getEndpointName();
                 }
 
                 @Override
                 public void onConnectionResult(String endpointId, ConnectionResolution result) {
                     if (result.getStatus().isSuccess()) {
-                        Log.i(TAG, "onConnectionResult: connection successful");
+                        Log.i(TAG, "onConnectionResult: connection successful: " + endpointId);
                         if (!receivedEndpointID.contains(endpointId)) {
                             receivedEndpointID.add(endpointId);
                         }
                     } else {
-                        Log.i(TAG, "onConnectionResult: connection failed");
+                        Log.i(TAG, "onConnectionResult: connection failed: " + endpointId);
                     }
                 }
 
                 @Override
                 public void onDisconnected(String endpointId) {
-                    Log.i(TAG, "onDisconnected: disconnected from the opponent");
+                    Log.i(TAG, "onDisconnected: disconnected from " + endpointId);
                 }
             };
 
@@ -129,17 +139,19 @@ public class MainActivity extends FlutterActivity {
     public void advertiseAndDiscover() {
         startAdvertising();
         startDiscovery();
-        Log.i(TAG, "Searching");
     }
 
     public void stopAdvertiseAndDiscover() {
+        Log.i(TAG, "Stopped advertising");
+        Log.i(TAG, "Stopped discovery");
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
     }
 
     /** Starts looking for other players using Nearby Connections. */
     private void startDiscovery() {
-        // Note: Discovery may fail. To keep this demo simple, we don't handle failures.
+        Log.i(TAG, "Started discovery");
+        // Note: Discovery may fail. we don't handle failures.
         connectionsClient.startDiscovery(
                 getPackageName(), endpointDiscoveryCallback,
                 new DiscoveryOptions.Builder().setStrategy(STRATEGY).build());
@@ -147,7 +159,8 @@ public class MainActivity extends FlutterActivity {
 
     /** Broadcasts our presence using Nearby Connections so other players can find us. */
     private void startAdvertising() {
-        // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
+        Log.i(TAG, "Started advertising");
+        // Note: Advertising may fail. we don't handle failures.
         connectionsClient.startAdvertising(
                 ID, getPackageName(), connectionLifecycleCallback,
                 new AdvertisingOptions.Builder().setStrategy(STRATEGY).build());
@@ -188,6 +201,9 @@ public class MainActivity extends FlutterActivity {
                       }
                       if (call.method.equals("stopNearbyService")) {
                           stopAdvertiseAndDiscover();
+                      }
+                      if (call.method.equals("sendUniqueID")) {
+                          ID = call.argument("UniqueID");
                       }
 
                       /*else {
