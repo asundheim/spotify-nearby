@@ -92,13 +92,12 @@ void sendPayload(String endpointID, String payload) {
 Future<void> receivedData() async {
   String unparsedData;
   final List<dynamic> result = await platform.invokeMethod('receivedPayload');
-  print('Debug: receviedData array:' + result.toString());
   // Tests for valid data
   for (int i = 0; i < result.length; i++) {
     try {
       if (result[i] != null) {
         unparsedData = result[i].toString();
-        print(unparsedData);
+        //print(unparsedData);
         print('Recieved a valid payload');
       } else {
         print('Recievied a null paylaod');
@@ -109,7 +108,7 @@ Future<void> receivedData() async {
     }
     List<String> parsedData;
     if (unparsedData != null) {
-      print('Parsing Data');
+      //print('Parsing Data');
       parsedData = unparsedData.split('|');
     } else {
       print('Error parsedData not length 3');
@@ -124,13 +123,13 @@ Future<void> receivedData() async {
         if (receivedUsers[i][0] == parsedData[0]) {
           receivedUsers[i][1] = parsedData[1];
           receivedUsers[i][2] = parsedData[2];
-          print('updated old entry');
+          //print('updated old entry');
           return;
         }
       }
 
       receivedUsers.add([parsedData[0], parsedData[1], parsedData[2]]);
-      print('added a new entry');
+      //print('added a new entry');
     }
   }
 }

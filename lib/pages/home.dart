@@ -15,12 +15,6 @@ class HomeState extends State<Home> {
   String currentUser;
   String currentlyPlaying;
 
-  //static List<String> userAccount = <String>[];
-  //static List<String> songTitle = <String>[];
-  //static List<String> songUrl = <String>[];
-  //static List<List<String>> titleData = <List<String>>[userAccount,songTitle,songUrl];
-  //static int _listLength = 0;
-
   @override
   void initState() {
     _loadNowPlaying();
